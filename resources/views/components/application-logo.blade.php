@@ -1,0 +1,1 @@
+<img src="{{ asset('assets/img/combine-logo.png') }}" width="500px">
