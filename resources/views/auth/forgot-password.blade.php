@@ -1,4 +1,6 @@
 <x-guest-layout>
+<br>
+<br>
 <h1 style="text-align: center; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 20px;">FORGOT PASSWORD</h1>
 <br>
     <div class="mb-4 text-sm text-gray-600">

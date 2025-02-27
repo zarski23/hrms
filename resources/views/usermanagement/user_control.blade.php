@@ -8,22 +8,22 @@
             <div class="page-header">
                 <div class="row align-items-center">
                     <div class="col">
-                        <h3 class="page-title">All Employee</h3>
+                        <h3 class="page-title">All Users</h3>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('home') }}">Main</a></li>
                             <li class="breadcrumb-item active">User Controller</li>
                         </ul>
                     </div>
                     <div class="col-auto float-right ml-auto">
-                        <a href="#" class="btn add-btn" data-toggle="modal" data-target="#add_user"><i class="fa fa-plus"></i> Add Employee</a>
+                        <a href="#" class="btn add-btn" data-toggle="modal" data-target="#add_user"><i class="fa fa-plus"></i> Add New User</a>
                     </div>
                 </div>
             </div>
 			<!-- /Page Header -->
 
             <!-- Search Filter -->
-            <form action="" method="">
-                @csrf
+            <!-- <form action="" method="">
+                @csrf -->
                 <div class="row filter-row">
                     <div class="col-sm-6 col-md-3">  
                         <div class="form-group form-focus">
@@ -32,41 +32,32 @@
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-3">  
-                        <button type="submit" class="btn btn-info btn-block"> Refresh </button>  
+                        <button type="submit" class="btn btn-info btn-block"  onclick="location.reload();"> Refresh </button>  
                     </div>
                 </div>
-            </form>     
+            <!-- </form>      -->
             <!-- /Search Filter -->
             {{-- message --}}
             {!! Toastr::message() !!}
             <div class="row">
                 <div class="col-md-12">
                     <div class="table-responsive">
-                        <table id="employee_table" class="table table-striped custom-table datatable" style="font-size: 13px !important;">
+                        <table id="employee_table" class="table table-striped custom-table datatable" style="font-size: 14px !important;">
                             <thead>
                                 <tr>
                                     <th hidden></th>
                                     <th>Image</th>
-                                    <th>Employee ID</th>
-                                    <th>DTR ID</th>
+                                    <th>Username</th>
                                     <th>First Name</th>
                                     <th>Middle Name</th>
-                                    <th>Last Name</th>      
-                                    <!-- <th>Email</th>
-                                    <th>Phone</th> -->
-                                    <th>Department</th>
-                                    <th>Employment</th>                                    
+                                    <th>Last Name</th>                                  
                                     <th>Role</th>                                   
                                     <th>Status</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            @foreach ($result as $userArray)
-                                @php
-                                    $user = $userArray['user'];
-                                    $userInformation = $userArray['userInformation']->first();
-                                @endphp
+                            @foreach ($result as $user)
                                 
                                 <tr>
                                     <td hidden class="id">{{ $user->id }}</td>
@@ -77,45 +68,24 @@
                                             
                                         </h2>
                                     </td>
-                                    <td class="employee_id">{{ $user->employee_id }}</td>
-                                    @if(!empty($userInformation->dtr_id))
-                                        <td class="dtr_id">{{ $userInformation->dtr_id }}</td>
-                                    @else
-                                        <td class="dtr_id"></td>
-                                    @endif
+                                    <td class="employee_id">{{ $user->username }}</td>
                                     <td class="first_name">{{ $user->first_name }}</td>
                                     <td class="middle_name">{{ $user->middle_name }}</td>
-                                    <td class="last_name">{{ $user->last_name }}</td>                                      
-                                    <!-- <td class="email">{{ $user->email }}</td> -->
-                                    <!-- @if(!empty($userInformation->mobile_number))
-                                        <td class="phone_number">{{ $userInformation->mobile_number }}</td>
-                                    @else
-                                        <td class="phone_number"></td>
-                                    @endif -->
-                                    @if(!empty($userInformation->department_name))
-                                        <td class="department">{{ $userInformation->department_name }}</td>          
-                                    @else          
-                                        <td class="department"></td>                 
-                                    @endif
-                                    @if(!empty($userInformation->employment_type))
-                                        <td class="employment">{{ $userInformation->employment_type }}</td>          
-                                    @else          
-                                        <td class="employment"></td>                 
-                                    @endif
+                                    <td class="last_name">{{ $user->last_name }}</td>
                                     <td>
-                                        @if ($user->hr_user_role=='admin')
-                                            <span class="badge bg-inverse-danger role_name">{{ $user->hr_user_role }}</span>
-                                            @elseif ($user->hr_user_role=='Super Admin')
-                                            <span class="badge bg-inverse-warning role_name">{{ $user->hr_user_role }}</span>
-                                            @elseif ($user->hr_user_role=='employee')
-                                            <span class="badge bg-inverse-info role_name">{{ $user->hr_user_role }}</span>
+                                        @if ($user->hr_user_role=='Super Admin')
+                                            <span style="font-size: 12px;" class="badge bg-inverse-danger role_name">{{ $user->hr_user_role }}</span>
+                                            @elseif ($user->hr_user_role=='Data Admin')
+                                            <span style="font-size: 12px;" class="badge bg-inverse-warning role_name">{{ $user->hr_user_role }}</span>
+                                            @elseif ($user->hr_user_role=='Evaluator')
+                                            <span style="font-size: 12px;" class="badge bg-inverse-info role_name">{{ $user->hr_user_role }}</span>
                                         @endif
                                     </td>
                                     <td>
                                         @if ($user->status=='active')
-                                            <span class="badge bg-inverse-success statuss">{{ $user->status }}</span>
+                                            <span style="font-size: 12px;" class="badge bg-inverse-success statuss">{{ $user->status }}</span>
                                             @elseif ($user->status=='inactive')
-                                            <span class="badge bg-inverse-danger statuss">{{ $user->status }}</span>
+                                            <span style="font-size: 12px;" class="badge bg-inverse-danger statuss">{{ $user->status }}</span>
                                             
                                         @endif
                                     </td>                                 
@@ -145,13 +115,13 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Add New Employee</h5>
+                        <h5 class="modal-title" style="font-weight: bold;">Register</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="add_user_form" action="{{route('add/new/employee')}}" method="POST" enctype="multipart/form-data">
+                        <form id="add_user_form" action="{{route('add/new/user')}}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group">
                                 <label>First Name: </label>
@@ -183,14 +153,18 @@
                                 <!-- Error message placeholder -->
                                 <span class="invalid-feedback" role="alert" id="password_confirmation_error"></span>
                             </div>
-                            <div class="form-group">
-                                <label>Biometric / DTR ID:</label>
-                                <input class="form-control @error('dtr_id') is-invalid @enderror" type="text" id="dtr_id" name="dtr_id" value="{{ old('dtr_id') }}" required>
-                                <!-- Error message placeholder -->
-                                <span class="invalid-feedback" role="alert" id="dtr_id_error"></span>
-                            </div>
                             <!-- insert default picture -->
                             <input type="hidden" class="image" name="image" value="photo_defaults.png">
+                            <div class="form-group">
+                                <label class="col-form-label">Role Name</label>
+                                <select class="select @error('role_name') is-invalid @enderror" name="hr_user_role" id="hr_user_role" required>
+                                    <option selected disabled>-- Select Role Name --</option>
+                                        <option value="Super Admin">Super Admin</option>
+                                        <option value="Data Admin">Data Admin</option>
+                                        <option value="Evaluator">Evaluator</option>
+                                </select>
+                            </div>
+
                             <div class="submit-section">
                                 <button type="submit" class="btn btn-success submit-btn">Submit</button>
                             </div>
@@ -201,51 +175,12 @@
         </div>
         <!-- /Add User Modal -->
 
-        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                $('#add_user form').on('submit', function(e) {
-                    e.preventDefault();
-                    
-                    $.ajax({
-                        url: $(this).attr('action'),
-                        method: $(this).attr('method'),
-                        data: $(this).serialize(),
-                        success: function(response) {                            
-                            // Handle success response
-                            $('#add_user').modal('hide');
-                            toastr.success('Updated successfully!', 'Success');
-                            // Reload the page
-                            location.reload(); 
-                        },
-                        error: function(response) {
-                            if (response.status === 422) {
-                                var errors = response.responseJSON.errors;
-                                // Clear previous error messages
-                                $('#add_user .invalid-feedback').empty();
-                                // Remove is-invalid class from all input fields
-                                $('#add_user input').removeClass('is-invalid');
-
-                                
-                                // Populate modal with error messages
-                                $.each(errors, function(key, value) {
-                                    $('#' + key).addClass('is-invalid');
-                                    $('#' + key).siblings('.invalid-feedback').text(value[0]);
-                                });
-                                $('#add_user').modal('show');
-                            }
-                        }
-                    });
-                });
-            });
-        </script> -->
-				
         <!-- Edit User Modal -->
         <div id="edit_user" class="modal custom-modal fade" role="dialog">
-            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit User</h5>
+                        <h5 class="modal-title">Update User</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -255,9 +190,9 @@
                         <form id="edit_user_form" action="{{ route('admin/edit/employee/profile') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="user_id" id="e_id" value="">
-                            <input type="hidden" name="employee_id" id="emp_id" value="">
+                            <input type="hidden" name="username" id="emp_id" value="">
                             <div class="row"> 
-                                <div class="col-sm-6"> 
+                                <div class="col-sm-4"> 
                                     <div class="form-group">
                                         <label>First Name <span class="text-danger">*</span></label>
                                         <input class="form-control" type="text" name="first_name_edit" id="first_name_edit" value="" required/>
@@ -266,16 +201,14 @@
                                         <span class="invalid-feedback" role="alert" id="first_name_edit_error"></span>
                                     </div>
                                 </div>
-                                <div class="col-sm-6"> 
+                                <div class="col-sm-4"> 
                                     <label>Middle Name <span class="text-danger">*</span></label>
                                     <input class="form-control" type="text" name="middle_name_edit" id="middle_name_edit" value="" required/>
                                     <input class="form-control" type="hidden" name="old_middle_name" id="old_middle_name" value=""/>
                                     <!-- Error message placeholder -->
                                     <span class="invalid-feedback" role="alert" id="middle_name_edit_error"></span>
                                 </div>
-                            </div>
-                            <div class="row"> 
-                                <div class="col-sm-6"> 
+                                <div class="col-sm-4"> 
                                     <div class="form-group">
                                         <label>Last Name <span class="text-danger">*</span></label>
                                         <input class="form-control" type="text" name="last_name_edit" id="last_name_edit" value="" required/>
@@ -285,44 +218,14 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="row"> 
-                                <div class="col-sm-6"> 
-                                    <label>Department <span class="text-danger">*</span></label>
-                                    <select name="department_edit" class="form-control" id="department_edit" required>
-                                        <option value="" disabled selected>--- Select ---</option>
-                                        @foreach ($employeeDepartment as $key=>$department )
-                                            @if ($department->department_name !== null)
-                                            <option value="{{ $department->department_name }}">{{ $department->department_name }}</option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                    <input class="form-control" type="hidden" name="old_department" id="old_department" value=""/>
-                                    <!-- Error message placeholder -->
-                                    <span class="invalid-feedback" role="alert" id="department_edit_error"></span>
-                                </div>
-                                <div class="col-sm-6"> 
-                                    <label>Employment Type <span class="text-danger">*</span></label>
-                                    <select name="employment_edit" class="form-control" id="employment_edit" required>
-                                        <option value="" disabled selected>--- Select ---</option>
-                                        @foreach ($employmentType as $key=>$employment )
-                                            @if ($employment->employment_type !== null)
-                                            <option value="{{ $employment->employment_type }}">{{ $employment->employment_type }}</option>           
-                                            @endif                           
-                                        @endforeach
-                                    </select>
-                                    <input class="form-control" type="hidden" name="old_employment" id="old_employment" value=""/>
-                                    <!-- Error message placeholder -->
-                                    <span class="invalid-feedback" role="alert" id="employment_edit_error"></span>
-                                </div>
-                            </div>
                             <br>
                             <div class="row"> 
                                 <div class="col-sm-6"> 
                                     <label>User Role <span class="text-danger">*</span></label> 
-                                    <select class="select" name="role_name_edit" id="role_name_edit" disabled>
-                                        <option value="employee">employee</option>
-                                        <option value="admin">admin</option>
+                                    <select class="select" name="role_name_edit" id="role_name_edit">
+                                        <option value="Super Admin">Super Admin</option>
+                                        <option value="Data Admin">Data Admin</option>
+                                        <option value="Evaluator">Evaluator</option>
                                     </select>
                                     <input class="form-control" type="hidden" name="old_role_name" id="old_role_name" value=""/>
                                     <!-- Error message placeholder -->
@@ -341,13 +244,6 @@
                             </div>
                             <br>
                             <div class="row"> 
-                            <div class="col-sm-6"> 
-                                    <label>Biometric / DTR ID <span class="text-danger">*</span></label>
-                                    <input class="form-control" type="text" name="dtr_id_edit" id="dtr_id_edit" value="" required/>
-                                    <input class="form-control" type="hidden" name="old_dtr_id" id="old_dtr_id" value=""/>
-                                    <!-- Error message placeholder -->
-                                    <span class="invalid-feedback" role="alert" id="dtr_id_edit_error"></span>
-                                </div>
                                 <div class="col-sm-6"> 
                                     <label>Photo</label>
                                     <input class="form-control" type="file" id="image" name="images">
@@ -364,43 +260,6 @@
             </div>
         </div>
         <!-- /Edit Salary Modal -->
-		<!-- <script>
-            $('#edit_user form').on('submit', function(e) {
-                e.preventDefault();
-                
-                $.ajax({
-                    url: $(this).attr('action'),
-                    method: $(this).attr('method'),
-                    data: new FormData(this),
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {                            
-                        // Handle success response
-                        $('#edit_user').modal('hide');
-                        toastr.success('Updated successfully!', 'Success');
-                        // Reload the page
-                        location.reload(); 
-                    },
-                    error: function(response) {
-                        if (response.status === 422) {
-                            var errors = response.responseJSON.errors;
-                            // Clear previous error messages
-                            $('#edit_user .invalid-feedback').empty(); // This line clears error messages in the Edit modal
-                            // Remove is-invalid class from all input fields
-                            $('#edit_user input').removeClass('is-invalid');
-
-                            // Populate modal with error messages
-                            $.each(errors, function(key, value) {
-                                $('#' + key).addClass('is-invalid'); // This line adds is-invalid class to the input field in the Edit modal
-                                $('#' + key).siblings('.invalid-feedback').text(value[0]); // This line populates the error message in the Edit modal
-                            });
-                            $('#edit_user').modal('show'); // This line ensures that the Edit modal is shown with error messages
-                        }
-                    }
-                });
-            });
-        </script> -->
-
 
         <!-- Delete User Modal -->
         <div class="modal custom-modal fade" id="delete_user" role="dialog">

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DepartmentList extends Model
-class DepartmentList extends Model
 {
     use HasFactory;
 

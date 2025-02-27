@@ -37,9 +37,7 @@
                         <label class="focus-label">Employee Name</label>
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-9 col-lg-9 col-xl-9 col-12 text-right">  
-                    <a href="#" class="btn btn-success" id="add_leave_credit_button" style="text-transform: none;" > <i class="fa fa-plus" aria-hidden="true"></i> Add Leave Credit Beginning Balance </a>   
-                </div>  
+                
             </div>
             <!-- /Search Filter -->
 
@@ -48,6 +46,7 @@
             <div class="review-header text-center">
                 @if($name)
                     <h4 class="review-title">Name: {{ $name }}</h4>
+                    <h4 class="review-title">DTR ID: {{ $dtr_id }}</h4>
                 @else
                     <h4 class="review-title">Name: --------, -------- .</h4>
                 @endif
@@ -66,6 +65,7 @@
                                         <th colspan="4" style="text-align: center; height: 10px;">Sick Leave</th>
                                         <th></th>
                                         <th></th>
+                                        <th></th>
                                     </tr>
                                     <tr>
                                         <!-- <th>Sort</th> -->
@@ -82,6 +82,7 @@
                                         <th style="font-size: 12px;">ABS UND. <br>( W/PAY )</th>
                                         <th style="font-size: 12px;">BALANCE</th>
                                         <th style="font-size: 12px;">ABS UND. <br>( W/O PAY )</th>
+                                        <th style="font-size: 12px; text-align: center; width: 60px;">TOTAL <br> BALANCE</th>
                                         <th style="font-size: 13px; text-align: center;">Date and Action on <br>Applying for Leave</th>
                                         <th class="text-center">Action</th>
                                     </tr>
@@ -93,17 +94,18 @@
                                         <!-- <td>{{ $credit->id }}</td> -->
                                         <td class="month" style="padding: 8px; text-align: center;">{{ $credit->month }}</td>
                                         <td class="year" style="padding: 8px; text-align: center;">{{ $credit->year }}</td>
-                                        <td style="padding: 8px; text-align: center;">{{ $credit->late_day }}</td>
-                                        <td style="padding: 8px; text-align: center;">{{ $credit->late_hours }}</td>
-                                        <td style="padding: 8px; text-align: center;">{{ $credit->late_minutes }}</td>
-                                        <td style="padding: 8px; text-align: center;">{{ $credit->vacation_leave_earned }}</td>
-                                        <td style="padding: 8px; text-align: center;">{{ $credit->vacation_leave_deduction }}</td>
+                                        <td class="day" style="padding: 8px; text-align: center;">{{ $credit->late_day }}</td>
+                                        <td class="hours" style="padding: 8px; text-align: center;">{{ $credit->late_hours }}</td>
+                                        <td class="minutes" style="padding: 8px; text-align: center;">{{ $credit->late_minutes }}</td>
+                                        <td class="vacation_leave_earned" style="padding: 8px; text-align: center;">{{ $credit->vacation_leave_earned }}</td>
+                                        <td class="vacation_leave_deduction" style="padding: 8px; text-align: center;">{{ $credit->vacation_leave_deduction }}</td>
                                         <td style="padding: 8px; text-align: center;"><input style="width: 60px; padding: 0px; text-align: center; height: 30px; font-size: 14px;" type="text" class="form-control" readonly value="{{ $credit->vacation_leave_balance }}"></td>
                                         <td style="padding: 8px; text-align: center;"></td>
-                                        <td style="padding: 8px; text-align: center;">{{ $credit->sick_leave_earned }}</td>
-                                        <td style="padding: 8px; text-align: center;">{{ $credit->sick_leave_deduction }}</td>
+                                        <td class="sick_leave_earned" style="padding: 8px; text-align: center;">{{ $credit->sick_leave_earned }}</td>
+                                        <td class="sick_leave_deduction" style="padding: 8px; text-align: center;">{{ $credit->sick_leave_deduction }}</td>
                                         <td style="padding: 8px; text-align: center;"><input style="width: 60px; padding: 0px; text-align: center; height: 30px; font-size: 14px;" type="text" class="form-control" readonly value="{{ $credit->sick_leave_balance }}"></td>
-                                        <td style="padding: 8px; text-align: center;">{{ $credit->remarks }}</td>
+                                        <td class="remarks" style="padding: 8px; text-align: center;">{{ $credit->remarks }}</td>
+                                        <td style="padding: 8px; text-align: center;"><input style="width: 60px; padding: 0px; text-align: center; height: 30px; font-size: 14px;" type="text" class="form-control" readonly value="{{ $credit->total_leave_balance }}"></td>
                                         <td style="padding: 8px; text-align: center;"></td>
                                         <td style="padding: 8px;" class="text-center">
                                             <div class="dropdown dropdown-action"style="width: 70px;">
@@ -122,12 +124,17 @@
                                         <td style="padding: 8px;"></td>
                                         <td style="padding: 8px;"><input style="width: 60px; padding: 0px; text-align: center; height: 30px; font-size: 14px;" type="text" class="form-control" readonly value="{{ $totalSLBalance }}"></td>
                                         <td style="padding: 8px;"></td>
+                                        <td style="padding: 8px;"><input style="width: 60px; padding: 0px; text-align: center; height: 30px; font-size: 14px;" type="text" class="form-control" readonly value="{{ $totalLeaveBalance }}"></td>
                                         <td style="padding: 8px;"></td>
                                         <td style="padding: 8px;" class="text-center"></td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <a href="#" class="btn btn-success btn-block" id="add_table_row_button" > <i class="fa fa-plus" aria-hidden="true"></i> Add Row (Month) </a>  
+                            @if($employeeLeaveCredits->isNotEmpty())
+                                <a href="#" class="btn btn-success btn-block" id="add_table_row_button" > <i class="fa fa-plus" aria-hidden="true"></i> Add Row (Month) </a>  
+                            @else
+                                <a href="#" class="btn btn-info btn-block" id="add_leave_credit_button"> <i class="fa fa-plus" aria-hidden="true"></i> Add Leave Credit Beginning Balance </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -148,6 +155,7 @@
                             @csrf
                             @if($employeeDetails)
                                 <input type="hidden" value="{{ $employeeDetails->id }}" name="employeeId">
+                                <input type="hidden" value="{{ $dtr_id }}" name="dtr_id">
                             @endif
                             
                             <div class="row">
@@ -211,82 +219,70 @@
                             @csrf
                             @if($employeeDetails)
                                 <input type="hidden" value="{{ $employeeDetails->id }}" name="employeeId">
+                                <input type="hidden" value="{{ $dtr_id }}" name="dtr_id">
                             @endif
                             
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="col-form-label">Month <span class="text-danger">*</span></label>
-                                        <select class="select" name="month">
+                                        <select class="select" name="month" id="month-select">
                                             <option value="">Select</option>
-                                            <option value="Jan">January</option>
-                                            <option value="Feb">February</option>
-                                            <option value="Mar">March</option>
-                                            <option value="Apr">April</option>
-                                            <option value="May">May</option>
-                                            <option value="Jun">June</option>
-                                            <option value="Jul">July</option>
-                                            <option value="Aug">August</option>
-                                            <option value="Sep">September</option>
-                                            <option value="Oct">October</option>
-                                            <option value="Nov">November</option>
-                                            <option value="Dec">December</option>
+                                            @foreach ($uniqueMonths as $month)
+                                                @php
+                                                    $dateObj = DateTime::createFromFormat('M', $month);
+                                                    $fullMonthName = $dateObj->format('F');
+                                                @endphp
+                                                <option value="{{ $month }}">{{ $fullMonthName }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="col-form-label">Year <span class="text-danger">*</span></label>
-                                        <select class="select" name="year">
+                                        <select class="select" name="year" id="year-select">
                                             <option value="">Select</option>
-                                            <option value="2020">2020</option>
-                                            <option value="2021">2021</option>
-                                            <option value="2022">2022</option>
-                                            <option value="2023">2023</option>
-                                            <option value="2024">2024</option>
-                                            <option value="2025">2025</option>
-                                            <option value="2026">2026</option>
-                                            <option value="2027">2027</option>
-                                            <option value="2028">2028</option>
-                                            <option value="2029">2029</option>
-                                            <option value="2030">2030</option>
+                                                @foreach ($uniqueYears as $year)
+                                                <option value="{{ $year }}">{{ $year }}</option>
+                                                @endforeach
                                         </select>
                                     </div>
                                 </div>
                             </div>
-                            <br>
-                            <br>
-                            <!-- <div class="row">
+                            <div class="row">
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label class="col-form-label">Day</label>
-                                        <input class="form-control" type="text" value="" name="day">
+                                        <input class="form-control" type="text" value="" name="day" id="day-input">
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label class="col-form-label">Hours</label>
-                                        <input class="form-control" type="text" value="" name="hours">
+                                        <input class="form-control" type="text" value="" name="hours" id="hours-input">
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label class="col-form-label">Minutes</label>
-                                        <input class="form-control" type="text" value="" name="minutes">
+                                        <input class="form-control" type="text" value="" name="minutes" id="minutes-input">
                                     </div>
                                 </div>
-                            </div>   -->
+                            </div>  
+                            <br>
+                            <br>
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="col-form-label">Vacation Leave (Earned)</label>
-                                        <input class="form-control" type="text" value="1.25" name="vacation_leave_earned">
+                                        <input class="form-control" type="text" value="1.25" name="vacation_leave_earned" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="col-form-label">Sick Leave (Earned)</label>
-                                        <input class="form-control" type="text" value="1.25" name="sick_leave_earned">
+                                        <input class="form-control" type="text" value="1.25" name="sick_leave_earned" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -301,6 +297,13 @@
         </div>
         <!-- /Add Table Row -->
 
+        <!-- Hidden Inputs For Modal Add Row Data -->
+        @foreach($employeesLeaveCreditfromAttendance as $result)
+            <input type="hidden" id="total_absent_days_{{ $result->year }}_{{ $result->month }}" value="{{ $result->total_absent_days }}">
+            <input type="hidden" id="total_late_hours_{{ $result->year }}_{{ $result->month }}" value="{{ $result->total_late_hours }}">
+            <input type="hidden" id="total_late_remaining_minutes_{{ $result->year }}_{{ $result->month }}" value="{{ $result->total_late_remaining_minutes }}">
+        @endforeach
+
         <!-- Update Table Row -->
         <div id="update_table_row" class="modal custom-modal fade" role="dialog">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -312,12 +315,12 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="{{ route('admin/add/table/row') }}" method="POST">
+                        <form action="{{ route('admin/update/table/row') }}" method="POST">
                             @csrf
                             @if($employeeDetails)
-                                <input type="hidden" value="{{ $employeeDetails->id }}" name="employeeId">
+                                <input type="text" value="{{ $employeeDetails->id }}" name="employeeId">
                             @endif
-                            
+                           
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
@@ -332,23 +335,72 @@
                                         <input class="form-control" type="text" value="" name="year" id="e_year" readonly>
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="col-form-label">Vacation Leave (Earned)</label>
-                                        <input class="form-control" type="text" value="1.25" name="vacation_leave_earned">
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="col-form-label">Sick Leave (Earned)</label>
-                                        <input class="form-control" type="text" value="1.25" name="sick_leave_earned">
-                                    </div>
-                                </div>
                             </div>
-                        
+                                <hr>
+                                <p>Vacantion Leave</p>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Day</label>
+                                            <input class="form-control" type="text" value="" name="day" id="e_day">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Hours</label>
+                                            <input class="form-control" type="text" value="" name="hours" id="e_hours">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Minutes</label>
+                                            <input class="form-control" type="text" value="" name="minutes" id="e_minutes">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Deduction</label>
+                                            <input class="form-control" type="text" value="" name="vacation_leave_deduction" id="e_vacation_leave_deduction">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Vacation Leave (Earned)</label>
+                                            <input class="form-control" type="text" value="" name="vacation_leave_earned" id="e_vacation_leave_earned">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <p>Sick Leave</p>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Deduction</label>
+                                            <input class="form-control" type="text" value="" name="sick_leave_deduction" id="e_sick_leave_deduction">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Sick Leave (Earned)</label>
+                                            <input class="form-control" type="text" value="" name="sick_leave_earned" id="e_sick_leave_earned">
+                                        </div>
+                                     </div>
+                                </div>  
+                                <hr>
+                                <p>Date and Action on Applying for Leave:</p>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <textarea class="form-control" type="text" value="" name="remarks" id="e_remarks"></textarea>
+                                        </div>
+                                     </div>
+                                </div>  
                             <div class="submit-section">
                                 <button class="btn btn-success submit-btn">Confirm</button>
                             </div>
+
                         </form>
                     </div>
                 </div>
@@ -361,8 +413,35 @@
     </div>
     <!-- /Page Wrapper -->
     @section('script')
+
     <script>
         document.getElementById("year").innerHTML = new Date().getFullYear();
+    </script>
+
+    <!-- For Add Table Row -->
+    <script>
+        $(document).ready(function () {
+            const updateInputs = function () {
+                const selectedMonth = $('#month-select').val();
+                const selectedYear = $('#year-select').val();
+
+                if (selectedMonth && selectedYear) {
+                    const totalAbsentDays = $(`#total_absent_days_${selectedYear}_${selectedMonth}`).val() || '';
+                    const totalLateHours = $(`#total_late_hours_${selectedYear}_${selectedMonth}`).val() || '';
+                    const totalLateMinutes = $(`#total_late_remaining_minutes_${selectedYear}_${selectedMonth}`).val() || '';
+
+                    $('#day-input').val(totalAbsentDays);
+                    $('#hours-input').val(totalLateHours);
+                    $('#minutes-input').val(totalLateMinutes);
+                } else {
+                    $('#day-input').val('');
+                    $('#hours-input').val('');
+                    $('#minutes-input').val('');
+                }
+            };
+
+            $('#month-select, #year-select').on('change', updateInputs);
+        });
     </script>
 
     <!-- Add Table Row JS -->
@@ -417,26 +496,34 @@
             const addTableRowButton = document.getElementById('add_table_row_button');
 
             const showModal = (modalId) => {
-                const modal = new bootstrap.Modal(document.getElementById(modalId));
-                modal.show();
+                const modalElement = document.getElementById(modalId);
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                }
             };
 
-            addLeaveCreditButton.addEventListener('click', () => {
-                if (employeeSelect.value === '') {
-                    alert('Please select an employee name before proceeding.');
-                } else {
-                    showModal('add_leave_credit_balance');
-                }
-            });
+            if (addLeaveCreditButton) {
+                addLeaveCreditButton.addEventListener('click', () => {
+                    if (employeeSelect.value === '') {
+                        alert('Please select an employee name before proceeding.');
+                    } else {
+                        showModal('add_leave_credit_balance');
+                    }
+                });
+            }
 
-            addTableRowButton.addEventListener('click', () => {
-                if (employeeSelect.value === '') {
-                    alert('Please select an employee name before proceeding.');
-                } else {
-                    showModal('add_table_row');
-                }
-            });
+            if (addTableRowButton) {
+                addTableRowButton.addEventListener('click', () => {
+                    if (employeeSelect.value === '') {
+                        alert('Please select an employee name before proceeding.');
+                    } else {
+                        showModal('add_table_row');
+                    }
+                });
+            }
         });
+
     </script>
 
     {{-- update js --}}
@@ -446,10 +533,14 @@
             var _this = $(this).parents('tr');
             $('#e_month').val(_this.find('.month').text());
             $('#e_year').val(_this.find('.year').text());
-            // $('#e_time_in').val(_this.find('.time_in').text());
-            // $('#e_break_out').val(_this.find('.break_out').text());
-            // $('#e_break_in').val(_this.find('.break_in').text());
-            // $('#e_time_out').val(_this.find('.time_out').text());
+            $('#e_day').val(_this.find('.day').text());
+            $('#e_hours').val(_this.find('.hours').text());
+            $('#e_minutes').val(_this.find('.minutes').text());
+            $('#e_vacation_leave_earned').val(_this.find('.vacation_leave_earned').text());
+            $('#e_sick_leave_earned').val(_this.find('.sick_leave_earned').text());
+            $('#e_vacation_leave_deduction').val(_this.find('.vacation_leave_deduction').text());
+            $('#e_sick_leave_deduction').val(_this.find('.sick_leave_deduction').text());
+            $('#e_remarks').val(_this.find('.remarks').text());
         });
     </script>
 

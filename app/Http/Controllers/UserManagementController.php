@@ -47,56 +47,90 @@ class UserManagementController extends Controller
     }
 
 
-    // Add New Employee addNewEmployee
+    // Add New Employee addNewUser
 
-    public function addNewEmployee(Request $request){
+    public function addNewUser(Request $request){
         
         DB::beginTransaction();
 
         try{
-    
-            $dt = Carbon::now();
-            $todayDate = $dt->toFormattedDayDateString();
-    
-            // Create the user and hash the password using SHA-1
-            $user = User::create([
-                'first_name' => $request->first_name,
-                'middle_name' => $request->middle_name,
-                'last_name' => $request->last_name,
-                'image' => $request->image,
-                'date_hired' => $todayDate,  
-                'password' => sha1($request->password), // Hash the password using SHA-1
-            ]); 
-            
-            $dtr_id = (new EmployeeProfile())->setConnection('second_db')->create([
-                'user_id' => $user->id,
-                'dtr_id' => $request->dtr_id,
-            ]);
 
-            //Input activity Logs
-            $dt = Carbon::now();
-            $todayDate  = $dt->toDayDateTimeString();
-            $activityLog = [
-                'user_id' => Session::get('user_id'),
-                'app_id' => '1',
-                'activities' => 'Add: New Employee: "' . $request->first_name . ' ' . $request->last_name.'"',
-                'date_time' => $todayDate,
-            ];
-            DB::table('activity_logs')->insert($activityLog);
+            $existing = User::select('*')
+                        ->where('first_name', $request->first_name)
+                        ->where('middle_name', $request->middle_name)
+                        ->where('last_name', $request->last_name)
+                        ->first();
+
+            if($existing == null){
+    
+                $dt = Carbon::now();
+                $todayDate = $dt->toFormattedDayDateString();
+        
+                // Create the user and hash the password using SHA-1
+                $user = User::create([
+                    'first_name' => $request->first_name,
+                    'middle_name' => $request->middle_name,
+                    'last_name' => $request->last_name,
+                    'image' => $request->image,
+                    'hr_user_role' => $request->hr_user_role,
+                    'date_hired' => $todayDate,  
+                    'password' => sha1($request->password), // Hash the password using SHA-1
+                ]); 
+
+                //Input activity Logs
+                $dt = Carbon::now();
+                $todayDate  = $dt->toDayDateTimeString();
+                $activityLog = [
+                    'user_id' => Session::get('user_id'),
+                    'activities' => 'Add: New Employee: "' . $request->first_name . ' ' . $request->last_name.'"',
+                    'date_time' => $todayDate,
+                ];
+                DB::table('activity_logs')->insert($activityLog);
+
+                DB::commit();
+                Toastr::success('Updated successfully !','Success');
+            }else{
+                Toastr::error('Data Already Existing !','Error');
+            }
+
+            // $employmentType = $this->getEmploymentType();
+            $result = (new AdminControllerEmployeeProfile)->getAllUser();
+            // $employeeDepartment = $this->getEmployeeDepartment();
+
+            $employeeCount = DB::table('users')->where('id', '<>', 1)->count();
+            Session::put('employeeCount', $employeeCount);
+
+            
+            return view('usermanagement.user_control',compact('result'));
+
+        }catch(\Exception $e){
+            DB::rollback();
+            // dd($e);
+            Toastr::error('Adding failed !','Error');
+            return redirect()->back();
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        try{
+
+            DB::beginTransaction();
+            // Reset the password using SHA-1
+            $user = User::where('id', $request->user_id)->update([
+                'password' => sha1($request->password), // Hash the password using SHA-1
+                'updated_at' => now(),
+            ]);
 
             DB::commit();
             Toastr::success('Updated successfully !','Success');
-
-            $employmentType = $this->getEmploymentType();
-            $result = (new AdminControllerEmployeeProfile)->getAllEmployee();
-            $employeeDepartment = $this->getEmployeeDepartment();
             
-            return view('usermanagement.user_control',compact('result','employeeDepartment','employmentType'));
+            return redirect()->back();
 
         }catch(\Exception $e){
             DB::rollback();
             dd($e);
-            Toastr::error('Adding failed !','Error');
+            Toastr::error('Update failed !','Error');
             return redirect()->back();
         }
     }
@@ -110,14 +144,14 @@ class UserManagementController extends Controller
 
         
         try {
-            $employee_id = $request->employee_id;
+            $username = $request->username;
             $user_id = $request->user_id;
 
 // ------------------ update employee image ------------------------------------ //
             if(!empty($request->upload_picture)){
-                if($image = $employee_id.'.'.$request->upload_picture->extension())
+                if($image = $username.'.'.$request->upload_picture->extension())
                 {
-                    $image = $employee_id.'.'.$request->upload_picture->extension();  
+                    $image = $username.'.'.$request->upload_picture->extension();  
                     $request->upload_picture->move(public_path('assets/images'), $image);
                 }
                 else{
@@ -127,7 +161,7 @@ class UserManagementController extends Controller
                 $update = [
                     'image' => $image,
                 ];
-                User::where('employee_id',$request->employee_id)->update($update);
+                User::where('username',$request->username)->update($update);
 
             }
            
@@ -136,7 +170,7 @@ class UserManagementController extends Controller
             if($hr_user_role=='admin' || $hr_user_role=='Admin' ){
                 
             // ------------------ update employee name ------------------------------------ //
-                $information = User::updateOrCreate(['employee_id' => $request->employee_id]);
+                $information = User::updateOrCreate(['username' => $request->username]);
                 $information->first_name         = $request->fname;
                 $information->middle_name        = $request->mname;
                 $information->last_name          = $request->lname;
@@ -155,6 +189,7 @@ class UserManagementController extends Controller
             return redirect()->back();
         }catch(\Exception $e){
             DB::rollback();
+            dd($e);
             Toastr::error('Update failed !','Error');
             return redirect()->back();
         }
@@ -171,8 +206,7 @@ class UserManagementController extends Controller
             
             if(!empty($employeeInformation)){
                 
-                DB::connection('second_db')
-                ->table('hrms_db.employee_information')
+                DB::table('employee_information')
                 ->where('user_id', $request->user_id)
                 ->update([
                     'age' => $request->age,
@@ -193,7 +227,7 @@ class UserManagementController extends Controller
 
             }else{
                 
-                DB::connection('second_db')->table('employee_information')->updateOrInsert(
+                DB::table('employee_information')->updateOrInsert(
                     ['user_id' => $request->user_id],
                     [
                         'age' => $request->age,
@@ -235,18 +269,15 @@ class UserManagementController extends Controller
         $user_id = Session::get('user_id'); // get user_id session
 
         $employeeInformation = $this->getEmployeeInformation();
-        $employeeProfile = $this->getEmployeeProfile();
+        $employeeProfile = [];
         
-        $employeePositions = $this->getEmployeePositions();
-        $employeeDepartment = $this->getEmployeeDepartment();
-        $employmentType = $this->getEmploymentType();
-        $employeeSalary = (new EmployeeSalary())->setConnection('second_db')->where('user_id',$user_id)->first(); // get employee salary
-        $employeeCommunityTax = (new EmployeeCommunityTax())->setConnection('second_db')->where('user_id',$user_id)->first(); // get employee community tax
+        $employeePositions = [];
+        $employeeDepartment = [];
+        $employmentType = [];
+        $employeeSalary = [];
+        $employeeCommunityTax = [];
 
-        $employeeSchedule = null; // Initialize to null
-        if ($employeeProfile && $employeeProfile->dtr_id !== null) {
-            $employeeSchedule = (new ShiftandSchedule)->getEmployeeSchedule($employeeProfile->dtr_id); // user Schedule
-        }
+        $employeeSchedule = null;
 
         $user = User::where('id',$user_id)->first();
 
@@ -299,16 +330,16 @@ class UserManagementController extends Controller
         
         return $employeeDepartment;
     }
-    public function getEmploymentType()
-    { 
-        $employeeDepartment = DB::connection('second_db')
-                            ->table('hrms_db.employment_types') 
-                            ->select('employment_type','employment_type_id')
-                            ->get(); // get all employment Type list
+    // public function getEmploymentType()
+    // { 
+    //     $employeeDepartment = DB::connection('second_db')
+    //                         ->table('hrms_db.employment_types') 
+    //                         ->select('employment_type','employment_type_id')
+    //                         ->get(); // get all employment Type list
 
         
-        return $employeeDepartment;
-    }
+    //     return $employeeDepartment;
+    // }
 
     public function getSignatories()
     { 
@@ -330,6 +361,21 @@ class UserManagementController extends Controller
                             ->get(); // get all signatories list
         return $signatories;
     }
+
+
+
+
+    // DepED System Functions
+
+    public function getCriteriaSPET()
+    { 
+        $criteria = DB::table('criteria_spet') 
+                            ->select('*')
+                            ->get(); // get all employee positions list
+
+        return $criteria;
+    }
+
 
 
 }

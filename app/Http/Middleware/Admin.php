@@ -16,7 +16,7 @@ class Admin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(Auth()->user()->hr_user_role=='admin')
+        if(Auth()->user()->hr_user_role=='Super Admin')
         {
             return $next($request);
         }

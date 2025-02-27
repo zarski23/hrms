@@ -11,9 +11,8 @@ class Activity extends Controller
 {
     public function userLog(){
 
-        $userLog = UserLog::select('user_logs.id','users.employee_id', 'users.first_name', 'users.middle_name', 'users.last_name','application_name', 'user_logs.description', 'user_logs.date_time')
+        $userLog = UserLog::select('user_logs.id','users.username', 'users.first_name', 'users.middle_name', 'users.last_name', 'user_logs.description', 'user_logs.date_time')
         ->join('users', 'user_logs.user_id', '=', 'users.id')
-        ->leftjoin('applications', 'user_logs.app_id', '=', 'applications.id')
         ->orderBy('user_logs.id', 'asc')
         ->get();
 

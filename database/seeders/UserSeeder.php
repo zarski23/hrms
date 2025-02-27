@@ -15,9 +15,9 @@ class UserSeeder extends Seeder
     {
          // Insert the default admin user with a SHA-1 hashed password.
          DB::table('users')->insert([
-            'employee_id' => 'ADMIN-001',
-            'image' => 'admin-image.jpg',
-            'first_name' => 'HR',
+            'username' => 'ADMIN-001',
+            'image' => 'admin-image.png',
+            'first_name' => 'System',
             'last_name' => 'Admin',
             'password' => sha1('admin1'), // Use SHA-1 hash function.
             'hr_user_role' => 'admin',

@@ -10,19 +10,24 @@ use App\Http\Controllers\AdminControllerTravelOrder;
 use App\Http\Controllers\AdminControllerOvertime;
 use App\Http\Controllers\AdminControllerLeaveApplication;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ElementaryApplicantController;
 use App\Http\Controllers\AdminControllerHRForms;
 use App\Http\Controllers\AdminControllerUserPermission;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CriteriaSPETController;
 use App\Http\Controllers\Signatories;
 use App\Http\Controllers\PositionList;
+use App\Http\Controllers\JobPositionList;
 use App\Http\Controllers\DepartmentList;
 use App\Http\Controllers\DesignationList;
-use App\Http\Controllers\Departments;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EvaluatorUserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ExcelDownloadData;
 
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LeaveCredits;
+use App\Http\Controllers\NonTeachingController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ShiftandSchedule;
 use App\Http\Controllers\UserControllerDTR;
@@ -82,11 +87,6 @@ Route::controller(UserManagementController::class)->group(function () {
     Route::post('employee/information/save', 'employeeInformationSave')->name('employee/information/save');
 });
 
-// ----------------------------- User userManagement -----------------------//
-Route::controller(UserManagementController::class)->group(function () {
-    Route::get('userManagement', 'index')->middleware('auth')->name('userManagement');   
-    Route::post('add/new/employee', 'addNewEmployee')->middleware('auth')->name('add/new/employee');   
-});
 
 // ----------------------------- User Controller / My DTR -----------------------//
 Route::controller(UserControllerDTR::class)->group(function () {
@@ -98,20 +98,6 @@ Route::controller(UserControllerDTR::class)->group(function () {
 Route::controller(UserControllerTravelOrder::class)->group(function () {
     Route::get('user/travel/order', 'viewTravelOrder')->middleware('auth')->name('user/travel/order');   
     
-});
-
-// ----------------------------- Admin View / Employee Profile ------------------------------//
-Route::controller(EmployeeController::class)->group(function () {
-    Route::get('employee/profile/{user_id}', 'profileEmployee')->middleware('auth')->name('employee/profile');
-    
-});
-
-// ----------------------------- Admin Controller / Employee Profile ------------------------------//
-Route::controller(AdminControllerEmployeeProfile::class)->group(function () {
-    Route::get('all/employee/profile', 'viewAllEmployee')->middleware('auth')->name('all/employee/profile');
-    Route::post('admin/employee/information/save', 'adminSaveEmployeeInformation')->middleware('auth')->name('admin/employee/information/save');
-    Route::post('admin/employee/profile/information/save', 'adminSaveEmployeeProfile')->name('admin/employee/profile/information/save');
-    Route::post('admin/edit/employee/profile', 'adminEditEmployeeProfile')->middleware('auth')->name('admin/edit/employee/profile');
 });
 
 // ----------------------------- Admin Controller / Employee Salary ------------------------------//
@@ -139,7 +125,6 @@ Route::controller(AdminControllerEmployeeAccess::class)->group(function () {
     Route::post('all/access/save', 'saveAccess')->middleware('auth')->name('all/access/save');
     Route::get('employee/access/delete/{user_id}', 'deleteAccessRecord')->middleware('auth');
 });
-
 
 // ----------------------------- Admin Controller / Attendance ------------------------------//
 Route::controller(AttendanceController::class)->group(function () {
@@ -200,6 +185,7 @@ Route::controller(PositionList::class)->group(function () {
     Route::post('admin/edit/position', 'editPositions')->middleware('auth')->name('admin/edit/position');
 }); 
 
+
 // ----------------------------- Department List -----------------------//
 Route::controller(DepartmentList::class)->group(function () {
     Route::get('view/departments', 'viewDepartments')->middleware('auth')->name('view/departments');
@@ -232,18 +218,84 @@ Route::controller(AdminControllerLeaveCredits::class)->group(function () {
     Route::get('view/leave/credits', 'leaveCredits_getNames')->middleware('auth')->name('view/leave/credits');
     Route::get('view/employee/leave/credits/{employeeid}', 'viewEmployeeLeaveCredits')->middleware('auth')->name('view/employee/leave/credits');
     Route::post('admin/add/table/row', 'adminAddTableRow')->middleware('auth')->name('admin/add/table/row');
+    Route::post('admin/update/table/row', 'adminUpdateTableRow')->middleware('auth')->name('admin/update/table/row');
     Route::post('admin/add/leave/credits/beginning/balance', 'adminAddLeaveCreditsBeginningBalance')->middleware('auth')->name('admin/add/leave/credits/beginning/balance');
 });
-
-// ----------------------------- Leave Credits -----------------------//
-// Route::controller(LeaveCredits::class)->group(function () {
-//     Route::get('view/leave/credits', 'viewLeaveCredits')->middleware('auth')->name('view/leave/credits');
-// });
-
 
 // ----------------------------- Help | User Manual -----------------------//
 Route::controller(UserManual::class)->group(function () {
     Route::get('help/user/manual', 'viewUserManual')->name('help/user/manual');
+});
+
+
+
+
+
+
+// ----------------------------- User userManagement -----------------------//
+Route::controller(UserManagementController::class)->group(function () {
+    Route::get('userManagement', 'index')->middleware('auth')->name('userManagement');   
+    Route::post('add/new/user', 'addNewUser')->middleware('auth')->name('add/new/user');
+    Route::post('reset/password', 'resetPassword')->middleware('auth')->name('reset/password');   
+});
+
+
+// ----------------------------- Admin Controller / Employee Profile ------------------------------//
+Route::controller(AdminControllerEmployeeProfile::class)->group(function () {
+    Route::get('all/employee/profile', 'viewAllEmployee')->middleware('auth')->name('all/employee/profile');
+    Route::post('admin/edit/employee/profile', 'adminEditEmployeeProfile')->middleware('auth')->name('admin/edit/employee/profile');
+    Route::post('admin/employee/information/save', 'adminSaveEmployeeInformation')->middleware('auth')->name('admin/employee/information/save');
+    Route::post('admin/employee/profile/information/save', 'adminSaveEmployeeProfile')->name('admin/employee/profile/information/save');
+    
+});
+
+
+// ----------------------------- Admin View / Employee Profile ------------------------------//
+Route::controller(EmployeeController::class)->group(function () {
+    Route::get('employee/profile/{user_id}', 'profileEmployee')->middleware('auth')->name('employee/profile');
+    
+});
+
+// ----------------------------- Super Admin Controller / Elementary Applicants ------------------------------//
+Route::controller(ElementaryApplicantController::class)->group(function () {
+    Route::get('elementary/applicants', 'viewElementaryApplicants')->middleware('auth')->name('elementary/applicants');
+    Route::post('upload/elementary/applicants', 'uploadElementaryApplicants')->middleware('auth')->name('upload/elementary/applicants');
+    Route::post('update/applicant/information', 'updateApplicantInformation')->middleware('auth')->name('update/applicant/information');
+    Route::post('add/applicant/rating', 'addApplicantRating')->middleware('auth')->name('add/applicant/rating');
+    Route::get('elementary/applicants/done/assessment', 'viewElementaryApplicantsDoneAssessment')->middleware('auth')->name('elementary/applicants/done/assessment');
+    Route::get('form/download/rating', 'downloadRating')->middleware('auth')->name('form/download/rating');
+    Route::get('view/all/applicants/rating', 'viewAllApplicantsRating')->middleware('auth')->name('view/all/applicants/rating');
+    Route::get('database/management', 'databaseManagement')->middleware('auth')->name('database/management');
+    Route::get('update/info/page', 'updateApplicantPage')->middleware('auth')->name('update/info/page');
+    Route::get('update/applicant/info/score/{application_code}', 'updateApplicantInfoScore')->middleware('auth')->name('update/applicant/info/score');
+});
+
+// ----------------------------- Super Admin Controller / Download Data ------------------------------//
+Route::controller(ExcelDownloadData::class)->group(function () {
+    Route::get('download/applicants/rating', 'exportApplicantRatings')->middleware('auth')->name('download/applicants/rating');
+});
+
+// ----------------------------- Super Admin Controller / Non-Teaching Applicants ------------------------------//
+Route::controller(NonTeachingController::class)->group(function () {
+    Route::get('nonteaching/applicants', 'viewNonTeachingApplicants')->middleware('auth')->name('nonteaching/applicants');
+});
+
+// ----------------------------- Job Position List -----------------------//
+Route::controller(JobPositionList::class)->group(function () {
+    Route::get('view/job/positions', 'viewJobPositions')->middleware('auth')->name('view/job/positions');
+}); 
+
+// ----------------------------- Criteria SPET List -----------------------//
+Route::controller(CriteriaSPETController::class)->group(function () {
+    Route::get('view/criteria/spet', 'viewCriteriaSPET')->middleware('auth')->name('view/criteria/spet');
+    Route::post('admin/add/criteria', 'addCriteria')->middleware('auth')->name('admin/add/criteria');
+
+}); 
+
+// ----------------------------- User Evaluator ------------------------------//
+Route::controller(EvaluatorUserController::class)->group(function () {
+    Route::get('all/user/evaluator', 'viewAllEvaluator')->middleware('auth')->name('all/user/evaluator');
+    Route::post('add/evaluator/permission', 'saveEvaluatorPermission')->middleware('auth')->name('add/evaluator/permission');
 });
 
 

@@ -10,7 +10,7 @@
 	<meta name="robots" content="noindex, nofollow">
 	<title>Dashboard - HRMS</title>
 	<!-- Favicon -->
-	<link rel="shortcut icon" type="image/x-icon" href="{{ URL::to('assets/img/barugo_logo.png') }}">
+	<link rel="shortcut icon" type="image/x-icon" href="{{ URL::to('assets/img/deped_leyte_logo.png') }}">
 	<!-- Bootstrap CSS -->
 	<link rel="stylesheet" href="{{ URL::to('assets/css/bootstrap.min.css') }}">
 	<!-- Fontawesome CSS -->
@@ -62,9 +62,9 @@
 			<!-- Logo -->
 			<div class="header-left">
 				<a href="{{ route('home') }}" class="logo">
-					<img src="{{ URL::to('/assets/img/barugo_logo.png') }}" width="40" height="40" alt="">
+					<img src="{{ URL::to('/assets/img/deped_leyte_logo.png') }}" width="40" height="40" alt="">
 				</a>
-				<span id="header-title" class="text-white">HRM System</span>
+				<span id="header-title" class="text-white">DepEd Leyte</span>
 			</div>
 			<!-- /Logo -->
 			<a id="toggle_btn" href="javascript:void(0);">
@@ -102,194 +102,7 @@
 				</li> -->
 				<!-- /Search -->
 
-				<!-- Notifications -->
-				<li class="nav-item dropdown">
-					<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-						<i class="fa fa-bell-o"></i>
-						<span class="badge badge-pill badge-danger">3</span> 
-					</a>
-					<div class="dropdown-menu notifications">
-						<div class="topnav-dropdown-header">
-							<span class="notification-title">Notifications</span> 
-							<a href="javascript:void(0)" class="clear-noti"> Clear All </a> 
-						</div>
-						<div class="noti-content">
-							<ul class="notification-list">
-								<li class="notification-message">
-									<a href="activities.html">
-										<div class="media">
-											<span class="avatar">
-												<img alt="" src="/images/photo_defaults.png">
-											</span>
-											<div class="media-body">
-												<p class="noti-details"><span class="noti-title">Nancy Agosto</span> submit leave form <span class="noti-title">Leave Application</span></p>
-												<p class="noti-time"><span class="notification-time">4 mins ago</span></p>
-											</div>
-										</div>
-									</a>
-								</li>
-								<li class="notification-message">
-									<a href="activities.html">
-										<div class="media">
-											<span class="avatar">
-												<img alt="" src="/images/photo_defaults.png">
-											</span>
-											<div class="media-body">
-												<p class="noti-details"><span class="noti-title">Ricardo Negado</span> update her profile information <span class="noti-title">Employee Status</span></p>
-												<p class="noti-time"><span class="notification-time">6 mins ago</span></p>
-											</div>
-										</div>
-									</a>
-								</li>
-								<li class="notification-message">
-									<a href="activities.html">
-										<div class="media">
-											<span class="avatar">
-												<img alt="" src="/images/photo_defaults.png">
-											</span>
-											<div class="media-body">
-												<p class="noti-details"><span class="noti-title">Jessryll Almacin</span> submit travel order form <span class="noti-title">Authority to Travel</span>
-												<p class="noti-time"><span class="notification-time">8 mins ago</span></p>
-											</div>
-										</div>
-									</a>
-								</li>
-								<li class="notification-message">
-									<a href="activities.html">
-										<div class="media">
-											<span class="avatar">
-												<img alt="" src="/images/photo_defaults.png">
-											</span>
-											<div class="media-body">
-												<p class="noti-details"><span class="noti-title">Jasmin Cardenas</span> submit leave form <span class="noti-title">Leave Application</span></p>
-												<p class="noti-time"><span class="notification-time">1 hr ago</span></p>
-											</div>
-										</div>
-									</a>
-								</li>
-								<li class="notification-message">
-									<a href="activities.html">
-										<div class="media">
-											<span class="avatar">
-												<img alt="" src="/images/photo_defaults.png">
-											</span>
-											<div class="media-body">
-												<p class="noti-details"><span class="noti-title">Conception Alcober</span> submit travel order form <span class="noti-title">Authority to Travel</span>
-												<p class="noti-time"><span class="notification-time">2 days ago</span></p>
-											</div>
-										</div>
-									</a>
-								</li>
-							</ul>
-						</div>
-						<div class="topnav-dropdown-footer"> <a href="activities.html">View all Notifications</a> </div>
-					</div>
-				</li>
-				<!-- /Notifications -->
-				
-				<!-- Message Notifications -->
-				<li class="nav-item dropdown">
-					<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-						<i class="fa fa-comment-o"></i> <span class="badge badge-pill badge-danger">8</span>
-					</a>
-					<div class="dropdown-menu notifications">
-						<div class="topnav-dropdown-header">
-							<span class="notification-title">Messages</span> 
-							<a href="javascript:void(0)" class="clear-noti"> Clear All </a>
-						 </div>
-						<div class="noti-content">
-							<ul class="notification-list">
-								<li class="notification-message">
-									<a href="chat.html">
-										<div class="list-item">
-											<div class="list-left">
-												<span class="avatar">
-													<img alt="" src="/images/photo_defaults.png">
-												</span>
-											</div>
-											<div class="list-body">
-												<span class="message-author">Sheena Aguilos </span> 
-												<span class="message-time">9:28 AM</span>
-												<div class="clearfix"></div>
-												<span class="message-content">"Morning! Ready to tackle today's tasks?"</span> 
-											</div>
-										</div>
-									</a>
-								</li>
-								<li class="notification-message">
-									<a href="chat.html">
-										<div class="list-item">
-											<div class="list-left">
-												<span class="avatar">
-													<img alt="" src="/images/photo_defaults.png">
-												</span>
-											</div>
-											<div class="list-body">
-												<span class="message-author">Ricardo Negado</span> 
-												<span class="message-time">6 Mar</span>
-												<div class="clearfix"></div> 
-												<span class="message-content">Hi, quick reminder about our meeting at 2 PM. See you there!</span> 
-											</div>
-										</div>
-									</a>
-								</li>
-								<li class="notification-message">
-									<a href="chat.html">
-										<div class="list-item">
-											<div class="list-left">
-												<span class="avatar">
-													<img alt="" src="/images/photo_defaults.png">
-												</span>
-											</div>
-											<div class="list-body">
-												<span class="message-author"> Alejandro Welbyne Cubilla </span>
-												<span class="message-time">5 Mar</span>
-												<div class="clearfix"></div> 
-												<span class="message-content">Hey, could you send me the latest file? Need it for the presentation. Thanks!</span> 
-											</div>
-										</div>
-									</a>
-								</li>
-								<li class="notification-message">
-									<a href="chat.html">
-										<div class="list-item">
-											<div class="list-left">
-												<span class="avatar">
-													<img alt="" src="/images/photo_defaults.png">
-													</span>
-												</div>
-											<div class="list-body">
-												<span class="message-author"> Lea Garcia</span>
-												<span class="message-time">3 Mar</span>
-												<div class="clearfix"></div>
-												<span class="message-content">Don't forget to submit your expense report by end of day. Thanks!</span> 
-											</div>
-										</div>
-									</a>
-								</li>
-								<li class="notification-message">
-									<a href="chat.html">
-										<div class="list-item">
-											<div class="list-left">
-												<span class="avatar">
-													<img alt="" src="/images/photo_defaults.png">
-												</span>
-											</div>
-											<div class="list-body">
-												<span class="message-author"> Kent Ariza </span>
-												<span class="message-time">27 Feb</span>
-												<div class="clearfix"></div>
-												<span class="message-content">Emergency team meeting at 3 PM. Please prioritize attendance.</span>
-											</div>
-										</div>
-									</a>
-								</li>
-							</ul>
-						</div>
-						<div class="topnav-dropdown-footer"> <a href="chat.html">View all Messages</a> </div>
-					</div>
-				</li>
-				<!-- /Message Notifications -->
+
 
 				<li class="nav-item dropdown has-arrow main-drop">
 					<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
@@ -297,10 +110,19 @@
 						<img src="{{ URL::to('/assets/images/'. Auth::user()->image) }}" alt="{{ Auth::user()->name }}">
 						<span class="status online"></span></span>
 						<span>{{ Session::get('first_name') }} {{ Session::get('last_name') }}</span>
+						<small style="color: #ffef4a;">({{ Session::get('hr_user_role') }})</small>
 					</a>
-					<div class="dropdown-menu">
-						<a class="dropdown-item" href="{{ route('profile_user') }}">My Profile</a>
-						<a class="dropdown-item" href="{{ route('logout') }}">Logout</a>
+					<div class="dropdown-menu dropdown-menu-right" style="position: right;">
+						@if (session('user_id') != 1)
+							<a class="dropdown-item d-flex align-items-center" href="{{ route('profile_user') }}">
+								<i class="fa fa-user" aria-hidden="true" style="margin-right: 8px;"></i>
+								<h4 style="color: #000076; margin: 0;">My Profile</h4>
+							</a>
+						@endif
+						<a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}">
+							<i class="fa fa-sign-out" aria-hidden="true" style="margin-right: 8px;"></i>
+							<h4 style="color: red; margin: 0;">Logout</h4>
+						</a>
 					</div>
 				</li>
 			</ul>
@@ -312,8 +134,16 @@
 					<i class="fa fa-ellipsis-v"></i>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
-					<a class="dropdown-item" href="{{ route('profile_user') }}">My Profile</a>
-					<a class="dropdown-item" href="{{ route('logout') }}">Logout</a>
+					@if (session('user_id') != 1)
+						<a class="dropdown-item d-flex align-items-center" href="{{ route('profile_user') }}">
+							<i class="fa fa-user" aria-hidden="true" style="margin-right: 8px;"></i>
+							<h4 style="color: #000076; margin: 0;">My Profile</h4>
+						</a>
+					@endif
+					<a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}">
+						<i class="fa fa-sign-out" aria-hidden="true" style="margin-right: 8px;"></i>
+						<h4 style="color: red; margin: 0;">Logout</h4>
+					</a>
 				</div>
 			</div>
 			<!-- /Mobile Menu -->

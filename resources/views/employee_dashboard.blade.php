@@ -36,9 +36,9 @@
                                         <div class="col-md-5">
                                             <div class="profile-info-left">
                                                 <h3 class="user-name m-t-0 mb-0">{{ Session::get('first_name') }} {{ Session::get('middle_name') }} {{ Session::get('last_name') }}</h3>
-                                                <div class="staff-id">Employee ID : {{ Session::get('employee_id') }}</div>
+                                                <div class="staff-id">Username: {{ Session::get('username') }}</div>
                                                 <div class="small doj text-muted">Date Hired : {{ Session::get('date_hired') }}</div>
-                                                <div class="staff-msg"><a class="btn btn-custom" href="chat.html">Send Message</a></div>
+                                                <div class="staff-msg"><a data-target="#change_password" data-toggle="modal" class="btn btn-custom" href="chat.html">Reset Password</a></div>
                                             </div>
                                         </div>
                                         <div class="col-md-7">
@@ -50,15 +50,7 @@
                                                     @if(!empty($employeeProfile->position_name))
                                                     <div class="text">{{ $employeeProfile->position_name }}</div>
                                                     @else
-                                                    <div class="text">N/A <small class="text-danger"> (Authorized Admin Only)</small></div>
-                                                    @endif
-                                                </li>
-                                                <li>
-                                                    <div class="title">Department:</div>
-                                                    @if(!empty($employeeProfile->department_name))
-                                                    <div class="text">{{ $employeeProfile->department_name }}</div>
-                                                    @else
-                                                    <div class="text">N/A <small class="text-danger"> (Authorized Admin Only)</small></div>
+                                                    <div class="text">N/A <small class="text-danger"> (For Update)</small></div>
                                                     @endif
                                                 </li>
                                                 <li>
@@ -66,15 +58,15 @@
                                                     @if(!empty($employeeProfile->employment_type))
                                                     <div class="text">{{ $employeeProfile->employment_type }}</div>
                                                     @else
-                                                    <div class="text">N/A <small class="text-danger"> (Authorized Admin Only)</small></div>
+                                                    <div class="text">N/A <small class="text-danger"> (For Update)</small></div>
                                                     @endif
                                                 </li>
                                                 <li>
-                                                    <div class="title">Biometric ID:</div>
-                                                    @if(!empty($employeeProfile->dtr_id))
-                                                    <div class="text">{{ $employeeProfile->dtr_id }}</div>
+                                                    <div class="title">Department:</div>
+                                                    @if(!empty($employeeProfile->department_name))
+                                                    <div class="text">{{ $employeeProfile->department_name }}</div>
                                                     @else
-                                                    <div class="text">N/A <small class="text-danger"> (Authorized Admin Only)</small></div>
+                                                    <div class="text">N/A <small class="text-danger"> (For Update)</small></div>
                                                     @endif
                                                 </li>
                                                 <li>
@@ -98,7 +90,7 @@
                         <ul class="nav nav-tabs nav-tabs-bottom">
                             <li class="nav-item"><a href="#emp_profile" data-toggle="tab" class="nav-link active">Profile</a></li>
                             
-                            <li class="nav-item"><a href="#bank_statutory" data-toggle="tab" class="nav-link">Salary and Taxes <small class="text-danger">(Authorized Admin Only)</small></a></li>
+                            <!-- <li class="nav-item"><a href="#bank_statutory" data-toggle="tab" class="nav-link">Salary and Taxes <small class="text-danger">(Authorized Admin Only)</small></a></li> -->
                         </ul>
                     </div>
                 </div>
@@ -108,7 +100,7 @@
                 <!-- Profile Info Tab -->
                 <div id="emp_profile" class="pro-overview tab-pane fade show active">
                     <div class="row">
-                        <div class="col-md-6 d-flex">
+                        <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill">
                                 <div class="card-body">
                                     <h3 class="card-title">Personal Informations <a href="#" class="edit-icon" data-toggle="modal" data-target="#personal_info_modal"><i class="fa fa-pencil"></i></a></h3>
@@ -218,87 +210,6 @@
                                         </li>
                                     </ul>
                                     @endif
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 d-flex">
-                            <div class="card profile-box flex-fill">
-                                <div class="card-body">
-                                    <h3 class="card-title">Work Schedule</h3>
-                                       @if($employeeSchedule !== null && !$employeeSchedule->isEmpty())
-                                        <ul class="personal-info">
-                                        <li>
-                                            <div class="title">Shift cut-off date</div>
-                                            <div class="text">{{ $employeeSchedule->first()->cut_off_date }}</div>
-                                            @if (empty($employeeSchedule->first()->cut_off_date))
-                                            <div class="text">N/A</div>
-                                            @endif
-                                        </li>
-                                        <li>
-                                            <div class="title">Shift type </div>
-                                            <div class="text">{{ $employeeSchedule->first()->shift_type }}</div>
-                                            @if (empty($employeeSchedule->first()->shift_type))
-                                            <div class="text">N/A</div>
-                                            @endif
-                                        </li>
-                                        <li>
-                                            <div class="title">Time-in</div>
-                                            <div class="text">{{ $employeeSchedule->first()->start_time }}</div>
-                                            @if (empty($employeeSchedule->first()->start_time))
-                                            <div class="text">N/A</div>
-                                            @endif
-                                        </li>
-                                        <li>
-                                            <div class="title">Break-out </div>
-                                            <div class="text">{{ $employeeSchedule->first()->break_out_time }}</div>
-                                            @if (empty($employeeSchedule->first()->break_out_time))
-                                            <div class="text">N/A</div>
-                                            @endif
-                                        </li>
-                                        <li>
-                                            <div class="title">Break-in </div>
-                                            <div class="text">{{ $employeeSchedule->first()->break_in_time }}</div>
-                                            @if (empty($employeeSchedule->first()->break_in_time))
-                                            <div class="text">N/A</div>
-                                            @endif
-                                        </li>
-                                        <li>
-                                            <div class="title">Time-out </div>
-                                            <div class="text">{{ $employeeSchedule->first()->end_time }}</div>
-                                            @if (empty($employeeSchedule->first()->end_time))
-                                            <div class="text">N/A</div>
-                                            @endif
-                                        </li>
-                                        </ul>
-                                        @else
-                                        <ul class="personal-info">
-                                        <li>
-                                            <div class="title">Shift cut-off date</div>
-                                            <div class="text">N/A</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Shift type </div>
-                                            <div class="text">N/A</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Time-in</div>
-                                            <div class="text">N/A</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Break-out </div>
-                                            <div class="text">N/A</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Break-in </div>
-                                            <div class="text">N/A</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Time-out </div>
-                                            <div class="text">N/A</div>
-                                        </li>
-                                        </ul>
-                                        @endif
-                                    <hr>
                                 </div>
                             </div>
                         </div>
@@ -524,7 +435,7 @@
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Profile Information</h5>
+                        <h5 class="modal-title">Profile Information1</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -540,18 +451,18 @@
                                             <div class="form-group">
                                                 <h4 class="user-name m-t-0 mb-0"> Name : {{ Session::get('first_name') }} {{ Session::get('middle_name') }} {{ Session::get('last_name') }}</h4>
                                                 <br>
-                                                <h4 class="user-name m-t-0 mb-0"> Employee ID : {{ Session::get('employee_id') }}</h4>
+                                                <h4 class="user-name m-t-0 mb-0"> Username : {{ Session::get('username') }}</h4>
                                             </div>
                                         </div>
                                         <br>
                                     @endif
 
                                     <div class="profile-img-wrap edit-img">
-                                        <input type="hidden" class="form-control" id="employee_id" name="employee_id" value="{{ Auth::user()->employee_id }}">
+                                        <input type="hidden" class="form-control" id="employee_id" name="username" value="{{ Auth::user()->username }}">
                                         <img class="inline-block" src="{{ URL::to('/assets/images/'. Auth::user()->image) }}" alt="{{ Auth::user()->name }}">
                                         <div class="fileupload btn">
                                             <span class="btn-text">edit</span>
-                                            <input class="upload" type="file" id="upload_picture" name="upload_picture">
+                                            <input class="upload" type="file" id="upload_picture" name="upload_picture" accept=".jpg,.jpeg,.png">
                                         </div>
                                     </div>
                                     <p style="text-align: center; color: blue;" id="output"></p>
@@ -839,6 +750,47 @@
         <!-- /Personal Info Modal -->
         @endif
         
+         <!-- Change Password Modal -->
+         <div id="change_password" class="modal custom-modal fade" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" style="font-weight: bold;">Reset Password</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="change_password_form" action="{{route('reset/password')}}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" class="form-control" name="user_id" value="{{ $user->id }}" readonly>
+                            <div class="form-group position-relative">
+                                <label>Password:</label>
+                                <input class="form-control @error('password') is-invalid @enderror" type="password" id="password" name="password" required>
+                                <span class="position-absolute" style="right: 10px; top: 70%; transform: translateY(-50%); cursor: pointer;" id="togglePassword">
+                                    <i class="fa fa-eye-slash" aria-hidden="true" id="eyeIcon"></i>
+                                </span>
+                                <span class="invalid-feedback" role="alert" id="password_error"></span>
+                            </div>
+                            <div class="form-group position-relative">
+                                <label>Repeat Password:</label>
+                                <input class="form-control @error('password') is-invalid @enderror" type="password" id="password_confirmation" name="password_confirmation" required>
+                                <span class="position-absolute" style="right: 10px; top: 70%; transform: translateY(-50%); cursor: pointer;" id="togglePasswordConfirmation">
+                                    <i class="fa fa-eye-slash" aria-hidden="true" id="eyeIconConfirmation"></i>
+                                </span>
+                                <span class="invalid-feedback" role="alert" id="password_confirmation_error"></span>
+                            </div>
+
+                            <div class="submit-section">
+                                <button type="submit" class="btn btn-success submit-btn">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Change Password Modal -->
+         
         <!-- Emergency Contact Modal -->
         <div id="emergency_contact_modal" class="modal custom-modal fade" role="dialog">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -1036,4 +988,47 @@
 
         <!-- /Page Content -->
     </div>
+
+    <script>
+         document.getElementById('upload_picture').addEventListener('change', function() {
+            const file = this.files[0];
+            const validExtensions = ['image/jpeg', 'image/png'];
+            if (file && !validExtensions.includes(file.type)) {
+                alert('Please select a JPG or PNG image file.');
+                this.value = ''; // Clear the input
+            }
+        });
+
+    </script>
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            }
+        });
+
+        document.getElementById('togglePasswordConfirmation').addEventListener('click', function() {
+            const passwordConfirmationInput = document.getElementById('password_confirmation');
+            const eyeIconConfirmation = document.getElementById('eyeIconConfirmation');
+            if (passwordConfirmationInput.type === 'password') {
+                passwordConfirmationInput.type = 'text';
+                eyeIconConfirmation.classList.remove('fa-eye-slash');
+                eyeIconConfirmation.classList.add('fa-eye');
+            } else {
+                passwordConfirmationInput.type = 'password';
+                eyeIconConfirmation.classList.remove('fa-eye');
+                eyeIconConfirmation.classList.add('fa-eye-slash');
+            }
+        });
+    </script>
+
 @endsection

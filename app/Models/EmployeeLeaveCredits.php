@@ -14,6 +14,7 @@ class EmployeeLeaveCredits extends Model
     
     protected $fillable = [
         'user_id',
+        'dtr_id',
         'month',
         'year',
         'late_day',

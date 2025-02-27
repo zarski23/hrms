@@ -265,6 +265,11 @@ select.form-control[multiple], select.form-control[size] {
 	2. Table
 -----------------------*/
 
+.table-hover tbody tr:hover {
+    background-color: #f2f2f2; /* Change to your preferred color */
+    cursor: pointer;
+}
+
 .table-responsive {
 	white-space: nowrap;
 	width: 100%;
@@ -336,7 +341,7 @@ table.dataTable thead > tr > td.sorting {
 	padding-right: 20px !important;
 }
 .table.custom-table > tbody > tr > td, .table.custom-table > tbody > tr > th, .table.custom-table > tfoot > tr > td, .table.custom-table > tfoot > tr > th, .table.custom-table > thead > tr > td, .table.custom-table > thead > tr > th {
-	padding: 10px 10px !important;
+	padding: 5px 5px !important;
 }
 /*-----------------
 	3. Helper Class
@@ -706,7 +711,7 @@ table.dataTable thead > tr > td.sorting {
 	background: -moz-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -webkit-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -ms-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
-	background: linear-gradient(to right, #ff0000 0%, #900000 100%);
+	background: linear-gradient(to right, #0a9743 0%, #006837 100%);
 	color: #fff;
 }
 .btn-custom.focus,
@@ -716,7 +721,7 @@ table.dataTable thead > tr > td.sorting {
 	background: -moz-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -webkit-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -ms-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
-	background: linear-gradient(to right, #ff0000 0%, #900000 100%);
+	background: linear-gradient(to right, #0a9743 0%, #006837 100%);
 	color: #fff;
 }
 .pagination > .active > a, 
@@ -1268,6 +1273,9 @@ table.dataTable thead > tr > td.sorting {
 .modal-dialog.modal-md {
     max-width: 600px;
 }
+.modal-dialog.modal-max {
+    max-width: 1200px;
+}
 .custom-modal .modal-content {
 	border: 0;
     border-radius: 10px;
@@ -1325,7 +1333,7 @@ table.dataTable thead > tr > td.sorting {
 	background: -moz-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -webkit-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -ms-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
-	background: linear-gradient(to right, #ff0000 0%, #900000 100%);
+	background: linear-gradient(to right, #0a9743 0%, #006837 100%);
 	border-bottom: 1px solid transparent;
 	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
 	height: 60px;
@@ -1514,7 +1522,7 @@ table.dataTable thead > tr > td.sorting {
 .sidebar-menu li a {
 	color: #ffffff;
 	display: block;
-	font-size: 15px;
+	font-size: 14px;
 	height: auto;
 	padding: 0 20px;
 }
@@ -1609,7 +1617,7 @@ table.dataTable thead > tr > td.sorting {
 }
 .sidebar-menu ul ul a {
 	display: block;
-	font-size: 14px;
+	font-size: 13px;
 	padding: 9px 10px 9px 50px;
 	position: relative;
 }
@@ -1835,7 +1843,7 @@ table.dataTable thead > tr > td.sorting {
     flex-wrap: wrap;
     justify-content: right;
     width: 100%;
-	background:url("../img/barugo_background3.jpg");
+	background:url("../img/deped_backgroundimage.jpg");
 	background-position: top;
 	background-size: cover;
 }
@@ -1932,7 +1940,7 @@ table.dataTable thead > tr > td.sorting {
 	background: -moz-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -webkit-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -ms-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
-	background: linear-gradient(to right, #ff0000 0%, #900000 100%);
+	background: linear-gradient(to right, #0a9743 0%, #006837 100%);
 	border: 0;
     border-radius: 4px;
     display: block;
@@ -2059,7 +2067,7 @@ table.dataTable thead > tr > td.sorting {
 	text-align: right;
 }
 .dash-widget-info > h3 {
-	font-size: 30px;
+	font-size: 25px;
 	font-weight: 600;
 }
 .dash-widget-info > span {
@@ -2235,7 +2243,7 @@ table.dataTable thead > tr > td.sorting {
 	padding-left: 15px;
 }
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-	color: #676767;
+	color: #000000;
 	font-size: 15px;
 	font-weight: normal;
 	line-height: 42px;
@@ -3169,7 +3177,7 @@ table.dataTable thead > tr > td.sorting {
 	transform-origin: left top;
 	transition: 240ms;
 	left: 12px;
-	top: -8px;
+	top: -18px;
 	z-index: 1;
 	color: #888;
 	margin-bottom: 0;
@@ -3177,21 +3185,21 @@ table.dataTable thead > tr > td.sorting {
 .form-focus.focused .focus-label {
 	opacity: 1;
 	font-weight: 300;
-	top: -14px;
-	font-size: 12px;
+	top: -22px;
+	font-size: 10px;
 	z-index: 1;
 }
 .form-focus .form-control:focus ~ .focus-label, 
 .form-focus .form-control:-webkit-autofill ~ .focus-label {
 	opacity: 1;
 	font-weight: 300;
-	top: -14px;
-	font-size: 12px;
+	top: -22px;
+	font-size: 10px;
 	z-index: 1;
 }
 .form-focus .form-control {
-	height: 50px;
-	padding: 21px 12px 6px;
+	height: 40px;
+	padding: 6px 12px 0px;
 }
 .form-focus .form-control::-webkit-input-placeholder {
 	color: transparent;
@@ -3240,7 +3248,7 @@ table.dataTable thead > tr > td.sorting {
 	padding-top: 10px;
 }
 .form-focus .select2-container--default .select2-selection--single .select2-selection__rendered {
-	color: #676767;
+	color: #000000;
 	font-size: 14px;
 	font-weight: normal;
 	line-height: 38px;
@@ -3254,8 +3262,8 @@ table.dataTable thead > tr > td.sorting {
 -----------------------*/
 
 .filter-row .btn {
-	min-height: 50px;
-	padding: 12px;
+	min-height: 40px;
+	padding: 6px;
 	text-transform: uppercase;
 }
 .action-label .label {
@@ -5354,7 +5362,7 @@ table.table-inbox tbody tr.checked {
 	background: -moz-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -webkit-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -ms-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
-	background: linear-gradient(to right, #ff0000 0%, #900000 100%);
+	background: linear-gradient(to right, #0a9743 0%, #006837 100%);
 	position: sticky;
 	top: 0;
 	z-index: 99;
@@ -5656,7 +5664,7 @@ table.table-inbox tbody tr.checked {
 	background: -moz-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -webkit-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
 	background: -ms-linear-gradient(left, #0fa2b6 0%, #0a9743 100%);
-	background: linear-gradient(to right, #ff0000 0%, #900000 100%);
+	background: linear-gradient(to right, #0a9743 0%, #006837 100%);
 	border-color: transparent;
 	box-shadow: 0 6px 15px rgba(36, 37, 38, 0.08);
 	color: #fff;
@@ -6872,9 +6880,11 @@ ul.comment-list li ul.children {
 }
 .review-table .select2-container .select2-selection--single {
 	height: 36px;
+	color: #000;
 }
 .review-table .select2-container--default .select2-selection--single .select2-selection__rendered {
 	line-height: 34px;
+	color: #000;
 }
 .review-table .select2-container--default .select2-selection--single .select2-selection__arrow {
 	height: 34px;

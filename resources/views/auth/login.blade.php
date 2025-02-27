@@ -17,7 +17,7 @@
         align-items: center;
         height: 100vh;
         font-size: 14px;
-        background:url("/assets/img/barugo_background3.jpg");
+        background: url("{{ asset('assets/img/deped_backgroundimage.jpg') }}");
         background-position: top;
 	    background-size: cover;
     }
@@ -30,8 +30,8 @@
         position: relative;
         overflow-x: hidden;
         padding: 0;
-        display: flex; /* Added */
-
+        display: flex; 
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.9);
     }
     .container .forms-container {
         /* position: relative; */
@@ -67,7 +67,7 @@
     border: none;
     padding: 20px;
     margin-top: 5px;
-    background-color: #b70000;
+    background-color: #03451d;
     border-radius: 5px;
     color: #fff;
     cursor: pointer;
@@ -116,9 +116,9 @@
         flex-direction: column;
         height: 520px;
         color: #fff;
-        background-image: url("/assets/img/employee_login.jpg");
+        background-image: url("{{ asset('assets/img/pdms-logo.png') }}");
         background-size: cover;
-        /* background: linear-gradient(170deg, #b80000, #900000); */
+        /* background: linear-gradient(170deg, #b80000, #006837); */
         transition: all 0.5s ease-in;
     }
     .container .intros-container .intro-control .intro-control__inner {
@@ -127,7 +127,7 @@
     .container .intros-container .intro-control button {
     border: none;
     padding: 15px 30px;
-    background-color: #900000;
+    background-color: #006837;
     border-radius: 15px;
     color: #fff;
     margin: 10px 0px;
@@ -243,6 +243,35 @@
     .time {
         text-align: center; /* Center align the text within date and time */
     }
+
+    /* ----- mobile view lofo ----- */
+    .logo-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap; /* This ensures images wrap on small screens if needed */
+    }
+
+    .logo {
+        height: 100px;
+        width: 100px;
+    }
+
+    @media only screen and (max-width: 768px) {
+        .logo {
+            height: 60px;
+            width: 60px;
+        }
+    }
+
+    @media only screen and (max-width: 480px) {
+        .logo {
+            margin-top: 70px;
+            height: 60px;
+            width: 60px;
+        }
+    }
+
 </style>
 
 <div class="container">
@@ -251,7 +280,7 @@
   <div class="intros-container">
     <div class="intro-control signin-intro">
       <div class="intro-control__inner">
-        <h2 style="font-family: 'Anton', 'Arial Black', sans-serif; font-size: 40px; font-weight:500;">EMPLOYEE PORTAL</h2>
+        <!-- <h2 style="font-family: 'Anton', 'Arial Black', sans-serif; font-size: 40px; font-weight:500;">DepEd Leyte Division</h2>
         <button id="signup-btn">
             <div class="datetime">
                 <div class="date">
@@ -267,7 +296,7 @@
                     <span id="period">AM</span>
                 </div>
             </div>
-        </button>
+        </button> -->
         <p></p>
         <!-- <button id="signup-btn">&nbsp;&nbsp;&nbsp;&nbsp; Help? &nbsp;&nbsp;&nbsp;&nbsp;</button> -->
       </div>
@@ -277,10 +306,16 @@
     <div class="form-control signin-form">
         <form method="POST" action="{{ route('login') }}">
             @csrf
-            <a href="/"><img src="{{ URL::to('assets/img/combine-logo.png') }}" alt="Leyte Logo" style="width: 100%;" class="logo"></a>
+            <div class="logo-container">
+                <a href="https://depedleytedivision.com/"><img src="{{ URL::to('assets/img/deped_leyte_logo.png') }}" alt="DepEd Logo" class="logo"></a>
+                <a href="/"><img src="{{ URL::to('assets/img/deped_matatag.png') }}" alt="Matatag Logo" class="logo"></a>
+                <a href="/"><img src="{{ URL::to('assets/img/bagong_pilipinas.png') }}" alt="Bagong Pilipinas Logo" class="logo"></a>
+                <a href="https://depedleytedivision.com/transparency-seal/"><img src="{{ URL::to('assets/img/transparency_seal.png') }}" alt="Transparency Seal" class="logo"></a>
+            </div>
+        
             <br>
                 <h2>Login</h2>
-                <input type="text" placeholder="Employee ID" name="employee_id" autocomplete="off" required />
+                <input type="text" placeholder="Username" name="username" autocomplete="off" required />
                 <input type="password" placeholder="Password" name="password" autocomplete="off" required />
                 <button>Signin</button>
             <br>
@@ -294,11 +329,14 @@
                         @endif
                     </div>
                     <div class="col-auto">
-                        <a class="text-muted" href="{{ route('help/user/manual') }}" >
+                        <a class="text-muted" href="#" >
                             Help?
                         </a>
                     </div>
                 </div>
+            </div>
+            <div class="text-center">
+                <p>Don't have an account yet? <a href="{{ route('pds-register') }}">Sign up here</a></p>
             </div>
             <br>
         </form>

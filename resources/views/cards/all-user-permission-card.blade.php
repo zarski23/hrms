@@ -10,7 +10,7 @@
             <div class="page-header">
                 <div class="row align-lists-center">
                     <div class="col">
-                        <h3 class="page-title">HR Admins | User Role Permissions</h3>
+                        <h3 class="page-title">User Admin | User Role Permissions</h3>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('home') }}">Main</a></li>
                             <li class="breadcrumb-item active">User Controller</li>
@@ -90,7 +90,7 @@
                                         <select class="select select2s-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" id="user" name="user">
                                             <option value="">-- Select --</option>
                                             @foreach ($userList as $key=>$user )
-                                            <option value="{{ $user->id }}" data-employee_id={{ $user->employee_id }}>{{ $user->first_name }} {{ $user->middle_name }} {{ $user->last_name }}</option>
+                                            <option value="{{ $user->id }}" data-employee_id={{ $user->username }}>{{ $user->first_name }} {{ $user->middle_name }} {{ $user->last_name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
