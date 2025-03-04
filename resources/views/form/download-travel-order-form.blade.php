@@ -106,7 +106,7 @@
                                             PROVINCE OF LEYTE<br>
                                             Municipality of Barugo<br><br>
                                             Human Resource Management Office
-                                            <img src="{{ asset('assets/img/barugo_logo.png') }}" alt="Right Image" class="logo">
+                                            <img src="{{ asset('assets/img/deped_leyte_logo.png') }}" alt="Right Image" class="logo">
                                         </div>
                                     </div>
 

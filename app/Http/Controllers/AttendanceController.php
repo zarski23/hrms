@@ -36,6 +36,7 @@ class AttendanceController extends Controller
             'employee_attendance.time_out',
             'employee_attendance.late',
             'employee_attendance.days_worked',
+            'employee_attendance.status',
             'employment_types.employment_type'
         )
         ->join('hrms_db.employee_profiles', 'employee_attendance.dtr_id', '=', 'employee_profiles.dtr_id')
@@ -60,7 +61,7 @@ class AttendanceController extends Controller
         });
 
         // Now $attendanceWithUsers contains the combined data from both databases
-        return view('payroll.employee-attendance')->with('attendance', $attendance);
+        return view('teaching.elementary_applicant')->with('attendance', $attendance);
 
     }
 
@@ -88,16 +89,40 @@ class AttendanceController extends Controller
     public function editEmployeeAttendance(Request $request)
     {
         try {
+    
+            $fullToShortDayMap = [
+                'Sunday' => 'Sun',
+                'Monday' => 'Mon',
+                'Tuesday' => 'Tue',
+                'Wednesday' => 'Wed',
+                'Thursday' => 'Thu',
+                'Friday' => 'Fri',
+                'Saturday' => 'Sat'
+            ];
 
-            $attendance = EmployeeAttendance::where('dtr_id', $request->dtr_id)
-                                ->where('date', $request->date)
-                                ->first();
+            // Convert full day name to short day name
+            $shortWeek = $fullToShortDayMap[$request->week] ?? $request->week;
+
+            $date = $request->date;
+            $dateParts = explode('-', $date);
+
+            $year = $dateParts[0];
+            $dateWithoutYear = $dateParts[1] . '-' . $dateParts[2];
+
+
             
+            $attendance = EmployeeAttendance::where('dtr_id', $request->dtr_id)
+                                ->where('date', $dateWithoutYear)
+                                ->where('year', $year)
+                                ->first();
+
             if (!$attendance) {
                 return response()->json(['message' => 'Attendance record not found'], 404);
             }
 
             $result = (new ExcelUploadAttendance)->computeLateAndDays($request->time_in,$request->break_out,$request->break_in,$request->time_out); //call the compute late function
+
+            $status = (new ExcelUploadAttendance)->attendanceStatus($shortWeek,$request->time_in,$request->time_out); // get the Attendance Status
 
             $attendance->time_in = $request->time_in;
             $attendance->break_out = $request->break_out;
@@ -105,6 +130,7 @@ class AttendanceController extends Controller
             $attendance->time_out = $request->time_out;
             $attendance->late = $result['total_late'];
             $attendance->days_worked = $result['days_worked'];
+            $attendance->status = $status;
             $attendance->save();
             
             Toastr::success('Updated successfully !','Success');

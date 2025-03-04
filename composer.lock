@@ -38,7 +38,8 @@
             },
             "autoload": {
                 "files": [
-                    "src/helper.php"
+                    "src/helper.php",
+                    "app/helpers.php"
                 ],
                 "psr-4": {
                     "Brian2694\\Toastr\\": "src/"

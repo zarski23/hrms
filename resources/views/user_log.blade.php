@@ -26,9 +26,8 @@
                             <thead>
                                 <tr>
                                     <th hidden>ID</th>
-                                    <th>Employee ID</th>
+                                    <th>Username</th>
                                     <th>Name</th>
-                                    <th>Application / System</th>
                                     <th style="color: #4CAF50;">Logs</th>
                                     <th>Date Time</th>
                                    
@@ -38,9 +37,8 @@
                                 @foreach (collect($userLog)->sortByDesc('id') as $user)
                                     <tr>
                                         <td hidden>{{ $user->id }}</td>
-                                        <td>{{ $user->employee_id }}</td>
+                                        <td>{{ $user->username }}</td>
                                         <td>{{ $user->first_name }} {{ $user->middle_name }} {{ $user->last_name }}</td>
-                                        <td>{{ $user->application_name }}</td>
                                         <td style="color: #4CAF50;">{{ $user->description }}</td>
                                         <td>{{ \Carbon\Carbon::parse($user->date_time)->format('D, M d, Y h:i A') }}</td>
                                     </tr>

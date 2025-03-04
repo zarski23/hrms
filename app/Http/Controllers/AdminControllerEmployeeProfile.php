@@ -21,13 +21,13 @@ class AdminControllerEmployeeProfile extends Controller
     public function viewAllEmployee()
     {
         try{
+                
+            $result = $this->getAllUser();
 
-            $result = $this->getAllEmployee();
+            // $employeeDepartment = (new UserManagementController)->getEmployeeDepartment();
+            // $employmentType = (new UserManagementController)->getEmploymentType();
 
-            $employeeDepartment = (new UserManagementController)->getEmployeeDepartment();
-            $employmentType = (new UserManagementController)->getEmploymentType();
-
-            return view('usermanagement.user_control',compact('result','employeeDepartment','employmentType'));
+            return view('usermanagement.user_control',compact('result'));
         
         }catch(\Exception $e){
             // dd($e);
@@ -36,44 +36,13 @@ class AdminControllerEmployeeProfile extends Controller
         }
     }
 
-    public function getAllEmployee(){
+    public function getAllUser(){
         
         $users = DB::connection('mysql')
                 ->table('users')
                 ->get();
 
-            $result = [];
-
-            foreach ($users as $user) {
-
-                // Skip the user with ID 1
-                if ($user->id == 1) {
-                    continue;
-                }
-                
-                $userInformation = DB::connection('second_db')
-                    ->table('employee_profiles')
-                    ->select(
-                        'employee_profiles.user_id',
-                        'employee_profiles.dtr_id',
-                        'employee_positions.position_name',
-                        'employee_information.mobile_number',
-                        'employee_departments.department_name',
-                        'employment_types.employment_type'
-                    )
-                    ->leftJoin('employee_information', 'employee_information.user_id', '=', 'employee_profiles.user_id')
-                    ->leftJoin('employee_positions', 'employee_positions.position_id', '=', 'employee_profiles.position_id')
-                    ->leftJoin('employee_departments', 'employee_departments.department_id', '=', 'employee_profiles.department_id')
-                    ->leftJoin('employment_types', 'employment_types.employment_type_id', '=', 'employee_profiles.employment_type_id')
-                    ->where('employee_profiles.user_id', '=', $user->id) 
-                    ->orderBy('employee_profiles.user_id')
-                    ->get();
-
-                $result[] = [
-                    'user' => $user,
-                    'userInformation' => $userInformation,
-                ];
-            }
+            $result = DB::table('users')->where('id', '<>', 1)->get();
 
         return $result;
     }
@@ -94,11 +63,10 @@ class AdminControllerEmployeeProfile extends Controller
             }
 
             $employeeInformation = $this->adminGetEmployeeInformation($request->user_id);
-            
+
             if(!empty($employeeInformation)){
                 
-                DB::connection('second_db')
-                ->table('hrms_db.employee_information')
+                DB::table('employee_information')
                 ->where('user_id', $request->user_id)
                 ->update([
                     'age' => $request->age,
@@ -111,8 +79,7 @@ class AdminControllerEmployeeProfile extends Controller
                     'philhealth_number' => $request->philhealth_number,
                 ]);
             }else{
-                DB::connection('second_db')
-                ->table('hrms_db.employee_information')
+                DB::table('employee_information')
                 ->insert([
                     'user_id' => $request->user_id,
                     'age' => $request->age,
@@ -131,7 +98,7 @@ class AdminControllerEmployeeProfile extends Controller
             return redirect()->route('employee/profile', ['user_id' => $request->user_id]);
         }catch(\Exception $e){
             DB::rollback();
-            // dd("ERROR");
+            dd($e);
             Toastr::error('Update fail !','Error');
             return redirect()->back();
         }
@@ -142,24 +109,18 @@ class AdminControllerEmployeeProfile extends Controller
     // save profile information
     public function adminSaveEmployeeProfile(Request $request)
     {
-
-        $request->validate([
-            'employee_position' => 'required|string',
-        ]);
-
         DB::beginTransaction();
-
         
         try {
-            $employee_id = $request->employee_id;
+            $username = $request->username;
             $user_id = $request->user_id;
 
 // ------------------ update employee image ------------------------------------ //
             if(!empty($request->upload_picture)){
-                if($image = $employee_id.'.'.$request->upload_picture->extension())
+                if($image = $username.'.'.$request->upload_picture->extension())
                 {
-                    $image = $employee_id.'.'.$request->upload_picture->extension();  
-                    $request->upload_picture->move(public_path('assets/images'), $image);
+                    $image = $username.'.'.$request->upload_picture->extension();  
+                    $request->upload_picture->move(public_path(path: 'assets/images'), $image);
                 }
                 else{
                     unset($image);
@@ -168,83 +129,29 @@ class AdminControllerEmployeeProfile extends Controller
                 $update = [
                     'image' => $image,
                 ];
-                User::where('employee_id',$request->employee_id)->update($update);
+                User::where('username',$request->username)->update($update);
 
             }
-            
-
                 
         // ------------------ update employee name ------------------------------------ //
-            $information = User::updateOrCreate(['employee_id' => $request->employee_id]);
+            $information = User::updateOrCreate(['username' => $request->username]);
             $information->first_name         = $request->fname;
             $information->middle_name        = $request->mname;
             $information->last_name          = $request->lname;
-            $information->status             = $request->employeeStatus;
-            $information->hr_user_role       = $request->employeeRole;
+            $information->date_hired         = $request->date_hired;
             $information->save();
-
-                
             
-        // ------------------ update employee profile ------------------------------------ //
-
-                
-            $employeePositionsID = DB::connection('second_db')
-                                ->table('hrms_db.employee_positions') 
-                                ->select('position_id')
-                                ->where('position_name',$request->employee_position)
-                                ->first(); // get employee position ID
-
-            $employeeDepartmentID = DB::connection('second_db')
-                                ->table('hrms_db.employee_departments') 
-                                ->select('department_id')
-                                ->where('department_name',$request->employee_department)
-                                ->first(); // get employee department ID
-                                    
-            $employmentTypeID = DB::connection('second_db')
-                                ->table('hrms_db.employment_types') 
-                                ->select('employment_type_id')
-                                ->where('employment_type',$request->employmentType)
-                                ->first(); // get employee employment type ID
-            
-            
-            $employeeProfile = EmployeeProfile::where('user_id',$user_id)->first();
-            
-            if(!empty($employeeProfile)){
-                
-                DB::connection('second_db')
-                    ->table('hrms_db.employee_profiles')
-                    ->where('user_id', $user_id)
-                    ->update([
-                    'dtr_id' => $request->dtr_id,
-                    'position_id' => $employeePositionsID->position_id,
-                    'department_id' => $employeeDepartmentID->department_id,
-                    'employment_type_id' => $employmentTypeID->employment_type_id,
-                ]);
-            
-            }else{
-                
-                DB::connection('second_db')->table('employee_information')->updateOrCreate(
-                    ['user_id' => $request->user_id],
-                    [
-                    'dtr_id' => $request->dtr_id,
-                    'position_id' => $employeePositionsID->position_id,
-                    'department_id' => $employeeDepartmentID->department_id,
-                    'employment_type_id' => $employmentTypeID->employment_type_id,
-                    ]
-                );
-
-            }     
 
             //Input activity Logs
-            $dt = Carbon::now();
-            $todayDate  = $dt->toDayDateTimeString();
-            $activityLog = [
-                'user_id' => Session::get('user_id'),
-                'app_id' => '1',
-                'activities' => 'Update: Employee Profile: "' . $request->fname . ' ' . $request->lname.'"',
-                'date_time' => $todayDate,
-            ];
-            DB::table('activity_logs')->insert($activityLog);
+            // $dt = Carbon::now();
+            // $todayDate  = $dt->toDayDateTimeString();
+            // $activityLog = [
+            //     'user_id' => Session::get('user_id'),
+            //     'app_id' => '1',
+            //     'activities' => 'Update: Employee Profile: "' . $request->fname . ' ' . $request->lname.'"',
+            //     'date_time' => $todayDate,
+            // ];
+            // DB::table('activity_logs')->insert($activityLog);
             
             DB::commit();
             Toastr::success('Updated successfully !','Success');
@@ -253,7 +160,6 @@ class AdminControllerEmployeeProfile extends Controller
         }catch(\Exception $e){
             DB::rollback();
             dd($e);
-            dd("Validation Required : ",$e);
             Toastr::error('Update fail !','Error');
             return redirect()->back();
         }
@@ -276,9 +182,9 @@ class AdminControllerEmployeeProfile extends Controller
         try{
             
             if(!empty($request->images)){
-                if($image = $request->employee_id.'.'.$request->images->extension())
+                if($image = $request->username.'.'.$request->images->extension())
                 {
-                    $image = $request->employee_id.'.'.$request->images->extension();  
+                    $image = $request->username.'.'.$request->images->extension();  
                     $request->images->move(public_path('assets/images'), $image);
                 }
                 else{
@@ -288,11 +194,11 @@ class AdminControllerEmployeeProfile extends Controller
                 $update = [
                     'image' => $image,
                 ];
-                User::where('employee_id',$request->employee_id)->update($update);
+                User::where('username',$request->username)->update($update);
 
             }
 
-            $information = User::updateOrCreate(['employee_id' => $request->employee_id]);
+            $information = User::updateOrCreate(['username' => $request->username]);
             $information->first_name         = $request->first_name_edit;
             $information->middle_name        = $request->middle_name_edit;
             $information->last_name          = $request->last_name_edit;
@@ -300,114 +206,58 @@ class AdminControllerEmployeeProfile extends Controller
             $information->hr_user_role       = $request->role_name_edit;
             $information->save();
 
-            $employeeDepartmentID = DB::connection('second_db')->table('hrms_db.employee_departments') 
-                                ->select('department_id')
-                                ->where('department_name',$request->department_edit)
-                                ->first(); // get employee department ID
-
-            $employmentID = DB::connection('second_db')->table('hrms_db.employment_types') 
-            ->select('employment_type_id')
-            ->where('employment_type',$request->employment_edit)
-            ->first(); // get employment ID
             
-
-            $employeeProfile = EmployeeProfile::where('user_id',$request->user_id)->first();
-
-            
-            if(!empty($employeeProfile)){
-                DB::connection('second_db')->table('hrms_db.employee_profiles')
-                    ->where('user_id', $request->user_id)
-                    ->update([
-                    'dtr_id' => $request->dtr_id_edit,
-                    'department_id' => $employeeDepartmentID->department_id,
-                    'employment_type_id' => $employmentID->employment_type_id,
-                ]);
-            }else{
-                EmployeeProfile::updateOrCreate(
-                    ['user_id' => $request->user_id],
-                    [
-                    'dtr_id' => $request->dtr_id_edit,
-                    'department_id' => $employeeDepartmentID->department_id,
-                    'employment_type_id' => $employmentID->employment_type_id,
-                    ]
-                );
-            }
             $employeeInformation = $this->adminGetEmployeeInformation($request->user_id);
             
-            // if(!empty($employeeInformation)){
-                
-            //     DB::connection('second_db')->table('hrms_db.employee_information')
-            //     ->where('user_id', $request->user_id)
-            //     ->update([
-            //         'mobile_number' => $request->phone_number_edit,
-            //     ]);
-            // }else{
-               
-            //     $employeeInformation = EmployeeInformation::updateOrCreate(
-            //         ['user_id' => $request->user_id],
-            //         ['mobile_number' => $request->phone_number_edit]
-            //     );
-            // }
             
             // Check Edited value to record in Activity Logs
-            $modifiedValue = "";
-            if ($request->old_first_name != $request->first_name_edit) {
-                $modifiedValue .= 'Firstname: '. $request->old_first_name .' to '.$request->first_name_edit . ', ';
-            }
-            if ($request->old_middle_name != $request->middle_name_edit) {
-                $modifiedValue .= 'Middlename: '. $request->old_middle_name .' to '.$request->middle_name_edit . ', ';
-            }
-            if ($request->old_last_name != $request->last_name_edit) {
-                $modifiedValue .= 'Lastname: '. $request->old_last_name .' to '.$request->last_name_edit . ', ';
-            }     
-            // if ($request->old_email != $request->email_edit) {
-            //     $modifiedValue .= 'Email: '. $request->old_email .' to '.$request->email_edit . ', ';
+            // $modifiedValue = "";
+            // if ($request->old_first_name != $request->first_name_edit) {
+            //     $modifiedValue .= 'Firstname: '. $request->old_first_name .' to '.$request->first_name_edit . ', ';
             // }
-            // if ($request->old_phone != $request->phone_number_edit) {
-            //     $modifiedValue .= 'Phone number: '. $request->old_phone .' to '.$request->phone_number_edit . ', ';
+            // if ($request->old_middle_name != $request->middle_name_edit) {
+            //     $modifiedValue .= 'Middlename: '. $request->old_middle_name .' to '.$request->middle_name_edit . ', ';
             // }
-            if ($request->old_department != $request->department_edit) {
-                $modifiedValue .= 'Department: '. $request->old_department .' to '.$request->department_edit . ', ';
-            }
-            if ($request->old_employment != $request->employment_edit) {
-                $modifiedValue .= 'Employment: '. $request->old_employment .' to '.$request->employment_edit . ', ';
-            }
-            if ($request->old_role_name != $request->role_name_edit) {
-                $modifiedValue .= 'Role: '. $request->old_role_name .' to '.$request->role_name_edit . ', ';
-            }
-            if ($request->old_status != $request->status_edit) {
-                $modifiedValue .= 'Status: '. $request->old_status .' to '.$request->status_edit . ', ';
-            }
-            if ($request->old_dtr_id != $request->dtr_id_edit) {
-                $modifiedValue .= 'DTR ID: '. $request->old_dtr_id .' to '.$request->dtr_id_edit;
-            }
+            // if ($request->old_last_name != $request->last_name_edit) {
+            //     $modifiedValue .= 'Lastname: '. $request->old_last_name .' to '.$request->last_name_edit . ', ';
+            // } 
+            // if ($request->old_role_name != $request->role_name_edit) {
+            //     $modifiedValue .= 'Role: '. $request->old_role_name .' to '.$request->role_name_edit . ', ';
+            // }
+            // if ($request->old_status != $request->status_edit) {
+            //     $modifiedValue .= 'Status: '. $request->old_status .' to '.$request->status_edit . ', ';
+            // }
+            // if ($request->old_dtr_id != $request->dtr_id_edit) {
+            //     $modifiedValue .= 'DTR ID: '. $request->old_dtr_id .' to '.$request->dtr_id_edit;
+            // }
 
-            // Remove trailing comma and space
-            $modifiedValue = rtrim($modifiedValue, ', ');
+            // // Remove trailing comma and space
+            // $modifiedValue = rtrim($modifiedValue, ', ');
 
-            //Input activity Logs
-            $dt = Carbon::now();
-            $todayDate  = $dt->toDayDateTimeString();
-            $activityLog = [
-                'user_id' => Session::get('user_id'),
-                'app_id' => '1',
-                'activities' => 'Modify: '.$request->old_first_name.' '.$request->old_last_name.' : "'.$modifiedValue.'"',
-                'date_time' => $todayDate,
-            ];
-            DB::table('activity_logs')->insert($activityLog);
+            // //Input activity Logs
+            // $dt = Carbon::now();
+            // $todayDate  = $dt->toDayDateTimeString();
+            // $activityLog = [
+            //     'user_id' => Session::get('user_id'),
+            //     'app_id' => '1',
+            //     'activities' => 'Modify: '.$request->old_first_name.' '.$request->old_last_name.' : "'.$modifiedValue.'"',
+            //     'date_time' => $todayDate,
+            // ];
+            // DB::table('activity_logs')->insert($activityLog);
 
             Toastr::success('Updated successfully !','Success');
 
-            $result = $this->getAllEmployee();
-            $employeeDepartment = (new UserManagementController)->getEmployeeDepartment();
-            $employmentType = (new UserManagementController)->getEmploymentType();
+            $result = $this->getAllUser();
+            $employeeDepartment = [];
+            $employmentType = [];
 
             return view('usermanagement.user_control',compact('result','employeeDepartment','employmentType'));
 
         }catch(\Exception $e){
+            dd($e);
             DB::rollback();
             Toastr::error('Update fail !','Error');
-            return response()->json(['error' => 'Update fail !'], 422);
+            return redirect()->back();
         }
     }
 

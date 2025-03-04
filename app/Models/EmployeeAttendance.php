@@ -22,5 +22,6 @@ class EmployeeAttendance extends Model
         'time_out',
         'late',
         'days_worked',
+        'status',
     ];
 }

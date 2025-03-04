@@ -23,10 +23,10 @@
     <body class="font-sans text-gray-900 antialiased">
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
         <div style="position: absolute; top: 0; left: 0; margin: 10px; color: red;">
-            <a href="/"><button class="btn"><i class="fa fa-home"></i> Back to Login Page</button></a>
+            <a href="home"><button class="btn"><i class="fa fa-home"></i> Login Page</button></a>
         </div>            
         <div style="position: absolute; top: 0; right: 0; margin: 5px; width: 200px; height: 200px;">
-            <a href="/">
+            <a href="home">
                 <x-application-logo style="width: 10px; height: 10px;" class=" fill-current text-gray-500" />
             </a>
         </div>

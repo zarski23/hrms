@@ -32,20 +32,20 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
 	try{
+
         $request->session()->regenerate();
 
         $request->validate([
-            'employee_id' => 'required|string',  
+            'username' => 'required|string',  
             'password' => 'required|string',
         ]);
 
-        $employee_id = $request->employee_id;
+        $username = $request->username;
         $password = $request->password;
 
-        // Retrieve the user from the database by their employee_id
-        $user = User::where('employee_id', $employee_id)->first();
+        // Retrieve the user from the database by their username
+        $user = User::where('username', $username)->first();
         $employeeCount = DB::table('users')->where('id', '<>', 1)->count();
-
 
         if ($user && sha1($password) === $user->password) {
             // Password matches; log the user in
@@ -59,12 +59,13 @@ class AuthenticatedSessionController extends Controller
                 Session::put('middle_name', $user->middle_name);
                 Session::put('last_name', $user->last_name);
                 Session::put('email', $user->email);
-                Session::put('employee_id', $user->employee_id);
+                Session::put('username', $user->username);
                 Session::put('date_hired', $user->date_hired);
+                Session::put('hr_user_role', $user->hr_user_role);
                 Session::put('status', $user->status);
                 Session::put('employeeCount', $employeeCount);
     
-                $activityLog = ['user_id'=> Session::get('user_id'), 'app_id'=> '1', 'description' => 'Logged in','date_time'=> $todayDate,];
+                $activityLog = ['user_id'=> Session::get('user_id'), 'description' => 'Logged in','date_time'=> $todayDate,];
                 DB::table('user_logs')->insert($activityLog);
 		
                 Toastr::success('Login successfully', 'Success');
@@ -96,7 +97,7 @@ class AuthenticatedSessionController extends Controller
         $dt = Carbon::now();
         $todayDate  = $dt->toDayDateTimeString();
 
-        $activityLog = ['user_id'=> Session::get('user_id'), 'app_id'=> '1', 'description' => 'Logged out','date_time'=> $todayDate,];
+        $activityLog = ['user_id'=> Session::get('user_id'), 'description' => 'Logged out','date_time'=> $todayDate,];
         DB::table('user_logs')->insert($activityLog);
 
         Auth::guard('web')->logout();

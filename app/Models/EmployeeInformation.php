@@ -9,14 +9,13 @@ class EmployeeInformation extends Model
 {
     use HasFactory;
 
-    protected $connection = 'second_db';
+    protected $connection = 'mysql';
 
     protected $fillable = [
         'user_id',
         'age',
         'gender',
         'mobile_number',
-        'email_address',
         'address',
         'birth_date',
         'marital_status',

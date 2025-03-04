@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\PDSController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,14 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
                 ->name('password.store');
+
+    // ------------------------------ Personnal Data Sheet ----------------------------------//
+    Route::controller(PDSController::class)->group(function () {
+        Route::get('pds-register', 'register')->name('pds-register');
+        Route::post('pds-store', 'storePDS')->name('store');  
+        Route::get('pds-preview/{id}', 'viewPDS')->name('preview');  //test
+    });
+
 });
 
 Route::middleware('auth')->group(function () {

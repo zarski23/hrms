@@ -16,7 +16,7 @@ class AdminControllerUserPermission extends Controller
     public function viewAllPermission()
     {
         // Get distinct user IDs from the second database
-        $distinctUserIds = DB::connection('second_db')->table('permission_module')
+        $distinctUserIds = DB::table('permission_module')
         ->distinct()
         ->pluck('user_id')
         ->toArray();
@@ -27,14 +27,13 @@ class AdminControllerUserPermission extends Controller
         ->get(); 
 
         // Retrieve users whose IDs are not in the list of distinct user IDs
-        $userList = User::select('id', 'employee_id', 'image', 'first_name', 'middle_name', 'last_name')
+        $userList = User::select('id', 'username', 'image', 'first_name', 'middle_name', 'last_name')
         ->whereNotIn('id', $distinctUserIds)
         ->where('id', '!=', 1)
         ->get();
 
         
-        $permission_lists = DB::connection('second_db')
-                    ->table('permission_lists')->get();
+        $permission_lists = DB::table('permission_lists')->get();
 
         return view('cards.all-user-permission-card',compact('users','userList','permission_lists'));
     }
@@ -48,7 +47,7 @@ class AdminControllerUserPermission extends Controller
         
         $request->validate([
             'user'        => 'required|string|max:255',
-            'employee_id' => 'required|string|max:255',
+            'username' => 'required|string|max:255',
         ]);
       
 
@@ -120,11 +119,11 @@ class AdminControllerUserPermission extends Controller
         }
     }
     // view edit record
-    public function viewEditUserPermission($employee_id)
+    public function viewEditUserPermission($username)
     {
         $permissions = DB::connection('second_db')
             ->table('permission_module')
-            ->where('user_id','=',$employee_id)
+            ->where('user_id','=',$username)
             ->get();
 
             $combinedPermissions = [];
@@ -144,7 +143,7 @@ class AdminControllerUserPermission extends Controller
 
         // dd($combinedPermissions);
 
-        $employees = DB::table('users')->select('id','employee_id', 'image', 'first_name', 'last_name')->where('id',$employee_id)->get();
+        $employees = DB::table('users')->select('id','username', 'image', 'first_name', 'last_name')->where('id',$username)->get();
         
 
         return view('edit.edit-permission',compact('employees','combinedPermissions'));

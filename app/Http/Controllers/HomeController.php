@@ -16,38 +16,66 @@ class HomeController extends Controller
 {
     public function index()
     {
+        
         if(Auth::id())
         {
             $hr_user_role=Auth()->user()->hr_user_role;
             // $role_name = Session::get('role_name');
-             
 
-            if($hr_user_role=='employee')
+            if($hr_user_role=='Super Admin')
             {
 
-                $user_id = Session::get('user_id'); // get user_id session
+                $permissions = DB::table('permission_module')
+                    ->where('user_id', '=', Session::get('user_id'))
+                    ->get();
 
-                $user = User::where('id',$user_id)->first();
-                $employeeInformation = (new UserManagementController)->getEmployeeInformation();
-                $employeeProfile = (new UserManagementController)->getEmployeeProfile();
-                $employeePositions = (new UserManagementController)->getEmployeePositions();
-                $employeeDepartment = (new UserManagementController)->getEmployeeDepartment();
-                $employmentType = (new UserManagementController)->getEmploymentType();
-                $employeeSalary = (new EmployeeSalary())->setConnection('second_db')->where('user_id',$user_id)->first(); // get employee salary
-                $employeeCommunityTax = (new EmployeeCommunityTax())->setConnection('second_db')->where('user_id',$user_id)->first(); // get employee community tax
-
-                $employeeSchedule = null; // Initialize to null
-                if ($employeeProfile && $employeeProfile->dtr_id !== null) {
-                    $employeeSchedule = (new ShiftandSchedule)->getEmployeeSchedule($employeeProfile->dtr_id); // user Schedule
+                // Create an associative array to hold permissions
+                $permissionsArray = [];
+                foreach ($permissions as $permission) {
+                    $permissionsArray[$permission->id_count] = [
+                        'add' => $permission->add_action,
+                        'view' => $permission->view_action,
+                        'update' => $permission->update_action,
+                        'delete' => $permission->delete_action,
+                        'upload' => $permission->upload_action,
+                        'download' => $permission->download_action,
+                    ];
                 }
-                
-                return view('employee_dashboard',compact('user','employeeInformation','employeeProfile','employeePositions','employeeDepartment', 'employmentType','employeeSchedule','employeeSalary','employeeCommunityTax'));
+
+                Session::put('permissionsArray', $permissionsArray);
+
+                // dd( $permissionsArray);
+                return view('admin.adminhome');
             }
-            else if($hr_user_role=='admin')
+            else if($hr_user_role=='Data Admin')
             {
 
-                $permissions = DB::connection('second_db')
-                    ->table('permission_module')
+                $permissions = DB::table('permission_module')
+                    ->where('user_id', '=', Session::get('user_id'))
+                    ->get();
+
+                // Create an associative array to hold permissions
+                $permissionsArray = [];
+                foreach ($permissions as $permission) {
+                    $permissionsArray[$permission->id_count] = [
+                        'add' => $permission->add_action,
+                        'view' => $permission->view_action,
+                        'update' => $permission->update_action,
+                        'delete' => $permission->delete_action,
+                        'upload' => $permission->upload_action,
+                        'download' => $permission->download_action,
+                    ];
+                }
+
+                Session::put('permissionsArray', $permissionsArray);
+
+                // dd( $permissionsArray);
+                return view('admin.adminhome');
+            }
+            else if($hr_user_role=='Evaluator')
+            {
+
+                $permissions = DB::table('permission_module')
                     ->where('user_id', '=', Session::get('user_id'))
                     ->get();
 

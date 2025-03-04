@@ -9,55 +9,91 @@ use App\Models\User;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
 
 class AdminControllerLeaveCredits extends Controller
 {
     public function leaveCredits_getNames(){
         
-        // Query on the first database connection (hrms_db)
-        $employeeType = DB::connection('second_db')
-        ->table('employee_profiles')
-        ->select('employee_profiles.user_id')
-        ->join('employment_types as e', 'employee_profiles.employment_type_id', '=', 'e.employment_type_id')
-        ->where('e.employment_type', '=', 'Regular')
-        ->get();
-
-        // Query on the second database connection (admin_db)
-        $users = DB::connection('mysql')
-        ->table('admin_db.users')
-        ->select('id', 'first_name', 'middle_name', 'last_name')
-        ->get();
-
-        // Merge the data based on user_id
-        $employees = $employeeType->map(function ($item) use ($users) {
-            $user = $users->firstWhere('id', $item->user_id);
-            $item->first_name = $user->first_name;
-            $item->middle_name = $user->middle_name;
-            $item->last_name = $user->last_name;
-            return $item;
-            });
+        $employees = $this->getEmployees();
 
         $totalVLBalance = 0;
         $totalSLBalance = 0;
+        $totalLeaveBalance = 0;
             
         
         // Get the employee ID from the URL parameter
         $selectedEmployeeId = request()->query('employeeid');
 
         $name = '';
-        $employeeLeaveCredits = [];
         $employeeDetails = '';
+        $employeeLeaveCredits = new Collection();
+        $employeesLeaveCreditfromAttendance = new Collection();
+        $uniqueMonths = new Collection();
+        $uniqueYears = new Collection();
     
-        return view('form.leave-credits',compact('employees', 'selectedEmployeeId','name','employeeLeaveCredits','employeeDetails','totalVLBalance','totalSLBalance'));
+        return view('form.leave-credits',compact('employees', 'selectedEmployeeId','name','employeeLeaveCredits','employeeDetails','totalVLBalance','totalSLBalance','totalLeaveBalance','employeesLeaveCreditfromAttendance','uniqueMonths','uniqueYears'));
     }
     
 
     public function viewEmployeeLeaveCredits($employeeId) {
 
+        $employeeProfile = EmployeeProfile::select('dtr_id')
+            ->where('user_id', $employeeId)
+            ->first();
+        $dtr_id = $employeeProfile->dtr_id;
+
+        $employees = $this->getEmployees();
+        $employeesLeaveCreditfromAttendance = $this->getEmployeesLeaveCreditsNotYetAddedToDataBase($dtr_id);
+
+        //get the month and year for dropdown list
+        $uniqueMonths = [];
+        $uniqueYears = [];
+
+        foreach ($employeesLeaveCreditfromAttendance as $item) {
+            if (!in_array($item->month, $uniqueMonths)) {
+                $uniqueMonths[] = $item->month;
+            }
+            if (!in_array($item->year, $uniqueYears)) {
+                $uniqueYears[] = $item->year;
+            }
+        }
+        
+        $employeeLeaveCredits = EmployeeLeaveCredits::where('user_id', $employeeId)->get();
+
+        $balance = EmployeeLeaveCredits::select('vacation_leave_balance','sick_leave_balance','total_leave_balance','created_at')
+        ->where('user_id', $employeeId)
+        ->orderBy('created_at', 'desc')
+        ->first();
+        if ($balance) {
+            $totalVLBalance = $balance->vacation_leave_balance;
+            $totalSLBalance = $balance->sick_leave_balance;
+            $totalLeaveBalance = $balance->total_leave_balance;
+        }else{
+            $totalVLBalance = 0;
+            $totalSLBalance = 0;
+            $totalLeaveBalance = 0;
+        }
+        
+        $employeeDetails = User::select('id','first_name', 'middle_name', 'last_name')
+            ->where('id', $employeeId)
+            ->first();
+        $name = $employeeDetails->last_name . ', ' . $employeeDetails->first_name . ' ' . $employeeDetails->middle_name; // Format the name
+
+        // Get the employee ID from the URL parameter
+        $selectedEmployeeId = $employeeId;        
+
+        // dd($employeeLeaveCredits);
+
+        return view('form.leave-credits',compact('employees','employeeLeaveCredits','name','employeeDetails','selectedEmployeeId','totalVLBalance','totalSLBalance','totalLeaveBalance','dtr_id','employeesLeaveCreditfromAttendance','uniqueMonths','uniqueYears'));
+    }
+
+    public function getEmployees(){
+        
         // Query on the first database connection (hrms_db)
         $employeeType = DB::connection('second_db')
         ->table('employee_profiles')
-        ->select('employee_profiles.user_id')
+        ->select('employee_profiles.user_id','employee_profiles.dtr_id')
         ->join('employment_types as e', 'employee_profiles.employment_type_id', '=', 'e.employment_type_id')
         ->where('e.employment_type', '=', 'Regular')
         ->get();
@@ -71,40 +107,51 @@ class AdminControllerLeaveCredits extends Controller
         // Merge the data based on user_id
         $employees = $employeeType->map(function ($item) use ($users) {
             $user = $users->firstWhere('id', $item->user_id);
+            $item->dtr_id = $item->dtr_id;
             $item->first_name = $user->first_name;
             $item->middle_name = $user->middle_name;
             $item->last_name = $user->last_name;
             return $item;
             });
-        
-        $employeeLeaveCredits = EmployeeLeaveCredits::where('user_id', $employeeId)->get();
-        $balance = EmployeeLeaveCredits::select('vacation_leave_balance','sick_leave_balance','created_at')
-        ->where('user_id', $employeeId)
-        ->orderBy('created_at', 'desc')
-        ->first();
-        if ($balance) {
-            $totalVLBalance = $balance->vacation_leave_balance;
-            $totalSLBalance = $balance->sick_leave_balance;
-        }else{
-            $totalVLBalance = 0;
-            $totalSLBalance = 0;
+
+
+        return $employees;
+    }
+
+    public function getEmployeesLeaveCreditsNotYetAddedToDataBase($dtr_id){
+
+        $results = DB::connection('second_db')
+            ->table('employee_attendance as ea')
+            ->select(
+                'ea.year',
+                DB::raw("DATE_FORMAT(STR_TO_DATE(ea.date, '%m-%d'), '%b') as month"),
+                DB::raw("COALESCE(SUM(CASE WHEN ea.Status = 'Absent' THEN 1 ELSE 0 END), 0) as total_absent_days"),
+                DB::raw("COALESCE(SUM(ea.late), 0) as total_late")                
+            )
+            ->leftJoin('employee_leave_credits as elc', function ($join) {
+                $join->on('ea.dtr_id', '=', 'elc.dtr_id')
+                     ->on('ea.year', '=', 'elc.year')
+                     ->on(DB::raw("DATE_FORMAT(STR_TO_DATE(ea.date, '%m-%d'), '%b')"), '=', 'elc.month');
+            })
+            ->where('ea.dtr_id', $dtr_id)
+            ->whereNull('elc.dtr_id')
+            ->whereNull('elc.year')
+            ->groupBy('ea.year', DB::raw("DATE_FORMAT(STR_TO_DATE(ea.date, '%m-%d'), '%b')"))
+            ->orderBy('ea.year')
+            ->orderBy(DB::raw("DATE_FORMAT(STR_TO_DATE(ea.date, '%m-%d'), '%b')"))
+            ->get();
+
+            // Loop through each result to calculate hours and minutes
+        foreach ($results as $result) {
+            $total_late_minutes = $result->total_late;
+            $hours = floor($total_late_minutes / 60);
+            $minutes = $total_late_minutes % 60;
+            $result->total_late_hours = $hours;
+            $result->total_late_remaining_minutes = $minutes;
         }
-        
 
+        return $results;
 
-        $employeeDetails = User::select('id','first_name', 'middle_name', 'last_name')
-            ->where('id', $employeeId)
-            ->first();
-
-        // Format the name
-        $name = $employeeDetails->last_name . ', ' . $employeeDetails->first_name . ' ' . $employeeDetails->middle_name;
-
-        // Get the employee ID from the URL parameter
-        $selectedEmployeeId = $employeeId;        
-
-        // dd($selectedEmployeeId);
-
-        return view('form.leave-credits',compact('employees','employeeLeaveCredits','name','employeeDetails','selectedEmployeeId','totalVLBalance','totalSLBalance'));
     }
 
     // public function getDayHoursMinutes(Request $request){
@@ -140,56 +187,93 @@ class AdminControllerLeaveCredits extends Controller
         
         try{
 
+            $existing = EmployeeLeaveCredits::select('*')
+                        ->where('user_id', $request->employeeId)
+                        ->where('month', $request->month)
+                        ->where('year' ,$request->year)
+                        ->first();
+
             $balance = EmployeeLeaveCredits::select('vacation_leave_balance','sick_leave_balance','created_at')
                         ->where('user_id', $request->employeeId)
-                        ->where('year',$request->year)
                         ->orderBy('created_at', 'desc')
                         ->first();
-                        
-            if ($balance) {
-  
-                $dtrId = EmployeeProfile::select('dtr_id')->where('user_id', $request->employeeId)->first();
-                $month = $this->handleMonthRequest($request->month);
-                $datePattern = $month . '-%';
-                
-                $totalLate = EmployeeAttendance::where('dtr_id', $dtrId->dtr_id)
-                            ->where('year', $request->year)
-                            ->where('date', 'LIKE', $datePattern)
-                            ->sum('late');
- 
-                // Calculate days, hours, and minutes
-                $days = intdiv($totalLate, 1440); // 1440 minutes in a day
-                $remainingMinutesAfterDays = $totalLate % 1440;
-                $hours = intdiv($remainingMinutesAfterDays, 60); // 60 minutes in an hour
-                $minutes = $remainingMinutesAfterDays % 60;
 
-                $equivalent = $this->conversionOfWorkingHoursAndMinutes($hours, $minutes);
+            if ($existing == null){
+                if ($balance) {
+    
+                    // $dtrId = EmployeeProfile::select('dtr_id')->where('user_id', $request->employeeId)->first();
+                    // $month = $this->handleMonthRequest($request->month);
+                    // $datePattern = $month . '-%';
+                    
+                    // $totalLate = EmployeeAttendance::where('dtr_id', $dtrId->dtr_id)
+                    //             ->where('year', $request->year)
+                    //             ->where('date', 'LIKE', $datePattern)
+                    //             ->sum('late');
+    
+                    // // Calculate days, hours, and minutes
+                    // $days = intdiv($totalLate, 1440); // 1440 minutes in a day
+                    // $remainingMinutesAfterDays = $totalLate % 1440;
+                    // $hours = intdiv($remainingMinutesAfterDays, 60); // 60 minutes in an hour
+                    // $minutes = $remainingMinutesAfterDays % 60;
 
-                $latestVLBalance = $balance->vacation_leave_balance - $equivalent;                
+                    $equivalent = $this->conversionOfDeductionforLeaveCredits($request->day, $request->hours, $request->minutes);
 
-                $leaveCredit = new EmployeeLeaveCredits();
-                $leaveCredit->user_id = $request->employeeId; 
-                $leaveCredit->month = $request->month;
-                $leaveCredit->year = $request->year;
-                $leaveCredit->late_day = $days;
-                $leaveCredit->late_hours = $hours;
-                $leaveCredit->late_minutes = $minutes;
-                $leaveCredit->vacation_leave_earned = $request->vacation_leave_earned;
-                $leaveCredit->vacation_leave_deduction = $equivalent;
-                $leaveCredit->vacation_leave_balance = $latestVLBalance;
-                $leaveCredit->sick_leave_earned = $request->sick_leave_earned;
-                $leaveCredit->sick_leave_deduction = 0;
-                $leaveCredit->sick_leave_balance = $balance->sick_leave_balance;
-                $leaveCredit->save();
+                    $latestVLBalance = $balance->vacation_leave_balance - $equivalent;
+                    $totalLeaveBalance = $latestVLBalance + $balance->sick_leave_balance;
+
+                    $leaveCredit = new EmployeeLeaveCredits();
+                    $leaveCredit->user_id = $request->employeeId;
+                    $leaveCredit->dtr_id = $request->dtr_id;
+                    $leaveCredit->month = $request->month;
+                    $leaveCredit->year = $request->year;
+                    $leaveCredit->late_day = $request->day;
+                    $leaveCredit->late_hours = $request->hours;
+                    $leaveCredit->late_minutes = $request->minutes;
+                    $leaveCredit->vacation_leave_earned = $request->vacation_leave_earned;
+                    $leaveCredit->vacation_leave_deduction = $equivalent;
+                    $leaveCredit->vacation_leave_balance = $latestVLBalance;
+                    $leaveCredit->sick_leave_earned = $request->sick_leave_earned;
+                    $leaveCredit->sick_leave_deduction = 0;
+                    $leaveCredit->sick_leave_balance = $balance->sick_leave_balance;
+                    $leaveCredit->total_leave_balance = $totalLeaveBalance;
+                    $leaveCredit->save();
+                }
+                DB::commit();
+                Toastr::success('Added successfully !','Success');
+            }else{
+                Toastr::error('Data Already Added !','Error');
             }
 
-            else{
-                dd('empty');
-            }
-
-            DB::commit();
-            Toastr::success('Updated successfully !','Success');
             return $this->viewEmployeeLeaveCredits($request->employeeId);
+        } catch(\Exception $e){
+            DB::rollback();
+            Toastr::error('Update fail !','Error');
+            return redirect()->back();
+        }
+    }
+
+    public function adminUpdateTableRow(Request $request){
+        try{
+
+            // Find the existing record based on user_id, month, and year
+            $leaveCredit = EmployeeLeaveCredits::where('user_id', $request->employeeId) 
+                    ->where('month', $request->month)
+                    ->where('year', $request->year)
+                    ->first();
+
+            if ($leaveCredit) {
+            // Update the remarks field
+            $leaveCredit->remarks = $request->remarks;
+            // Save the updated record
+            $leaveCredit->save();
+
+            Toastr::success('Update successful!', 'Success');
+            } else {
+            Toastr::error('Record not found!', 'Error');
+            }
+
+            return $this->viewEmployeeLeaveCredits($request->employeeId);
+
         } catch(\Exception $e){
             DB::rollback();
             Toastr::error('Update fail !','Error');
@@ -203,7 +287,8 @@ class AdminControllerLeaveCredits extends Controller
 
             $leaveCredit = new EmployeeLeaveCredits();
 
-            $leaveCredit->user_id = $request->employeeId; 
+            $leaveCredit->user_id = $request->employeeId;
+            $leaveCredit->dtr_id = $request->dtr_id;
             $leaveCredit->year = $request->year;
             $leaveCredit->vacation_leave_balance = $request->vacation_leave_earned_begginning_balance;
             $leaveCredit->sick_leave_balance = $request->sick_leave_earned_begginning_balance;
@@ -213,6 +298,7 @@ class AdminControllerLeaveCredits extends Controller
             Toastr::success('Updated successfully !','Success');
             return $this->viewEmployeeLeaveCredits($request->employeeId);
         } catch(\Exception $e){
+            dd($e);
             DB::rollback();
             Toastr::error('Update fail !','Error');
             return redirect()->back();
@@ -251,7 +337,7 @@ class AdminControllerLeaveCredits extends Controller
         }
     }
 
-    public function conversionOfWorkingHoursAndMinutes($hours, $minutes) {
+    public function conversionOfDeductionforLeaveCredits($days, $hours, $minutes) {
 
         // Define the minutes equivalent array
         $minutesEquivalent = [
@@ -320,6 +406,9 @@ class AdminControllerLeaveCredits extends Controller
         // Calculate the total equivalent value
         $equivalent = 0;
     
+        // Convert days to equivalent value
+        $equivalent += $days;
+
         // Convert hours to equivalent value (assuming 1 hour = 0.125 * 60)
         $equivalent += $hours * 0.125;
     
