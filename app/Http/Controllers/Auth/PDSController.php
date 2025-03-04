@@ -120,7 +120,6 @@ class PDSController extends Controller
 
     //   dd($pds);
 
-
     //   $request->validate([
     //     'spouse_name' => 'required|string|max:255',
     //     'spouse_occupation' => 'nullable|string|max:255',

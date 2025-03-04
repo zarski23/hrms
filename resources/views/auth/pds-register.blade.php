@@ -182,7 +182,7 @@
                         <x-text-input id="tin" class="w-full" type="text" name="tin_no" pattern="^\d{1,3}( ?\d{3}){3}$" placeholder="123 456 789 012"  />
                     </td>
                     <td class="p-2">
-                        <x-text-input id="agency_employee_no" class="w-full" type="text" name="agency_employee_no" maxlength="255" placeholder="EMPLOYEE-001" />
+                        <x-text-input id="agency_employee_no" class="w-full" type="number" name="agency_employee_no" maxlength="6" placeholder="123456" />
                     </td>
 
                 </table>
@@ -623,6 +623,36 @@
                 </table>
 
 
+                <!-- APPOINTMENT TITLE -->
+                <h2 class="text-xl font-semibold mt-6 mb-4 border-b pb-2 px-4">Appoinment Form</h2>
+
+                <table class="w-full border-collapse border border-gray-300" id="csc-table">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="p-2 border border-gray-300">Plantilla No</th>
+                            {{-- <th class="p-2 border border-gray-300">Employee No</th> --}}
+                            <th class="p-2 border border-gray-300">School ID</th>
+                            <th class="p-2 border border-gray-300">School Name</th>
+                            <th class="p-2 border border-gray-300">District</th>
+                            <th class="p-2 border border-gray-300">Appointment Status</th>
+                            <th class="p-2 border border-gray-300">Date of Effectivity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="p-2 border border-gray-300"><x-text-input class="w-full" type="text" name=appointment_platilla/></td>
+                            {{-- <td class="p-2 border border-gray-300"><x-text-input class="w-full" type="text" name=appointment_/></td> --}}
+                            <td class="p-2 border border-gray-300"><x-text-input class="w-full" type="text" name=appointment_schoolId/></td>
+                            <td class="p-2 border border-gray-300"><x-text-input class="w-full" type="text" name=appointment_schooName/></td>
+                            <td class="p-2 border border-gray-300"><x-text-input class="w-full" type="text" name=appointment_district/></td>
+                            <td class="p-2 border border-gray-300"><x-text-input class="w-full" type="text" name=appointment_status/></td>
+                            <td class="p-2 border border-gray-300"><x-text-input class="w-full" type="date" name=appointment_/></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+
 
                 <!-- Submit Button -->
                 <br>
@@ -777,23 +807,28 @@
             document.querySelector('input[name="workexp_children[0][work_status]"]').value = 'Permanent';
             document.querySelector('select[name="workexp_children[0][work_gov_service]"]').value = '1'; // 1 = Yes, 0 = No
 
-            
+            //  Other Information Fields
             document.querySelector('input[name="skills_hobbies"]').value = "Programming, Music, Sports";
             document.querySelector('input[name="distinctions"]').value = "Best Employee of the Year 2021";
             document.querySelector('input[name="membership"]').value = "IEEE, PMI";
 
+             // Additional Questions Fields
             document.querySelector('input[name="q1"][value="No"]').checked = true;
             document.querySelector('input[name="q2"][value="No"]').checked = true;
             document.querySelector('input[name="q3"][value="No"]').checked = true;
 
+            // References Fields
             for(let x = 0; x<3; x++) {
                 document.querySelector(`input[name="references[${x}][reference_name]"]`).value = `AllenBeato${x}`;
                 document.querySelector(`input[name="references[${x}][reference_address]"]`).value = `123 Main Street, Metro City${x}`;
                 document.querySelector(`input[name="references[${x}][contact_no]"]`).value = `0912345678${x}`;
             }
 
+            // 
+
         }
 
+        //ADD CHILDREN
         document.addEventListener("DOMContentLoaded", function() {
             let childIndex = 1; // Start with index 1 since the first row exists
 
@@ -823,6 +858,8 @@
             });
         });
 
+
+        //ADD CSC
         document.addEventListener("DOMContentLoaded", function() {
             let childIndex = 1; // Start with index 1 since the first row exists
 
@@ -852,6 +889,8 @@
             });
         });
 
+
+        //WORK EXPERIENCES
         document.addEventListener("DOMContentLoaded", function() {
             let childIndex = 1; // Start with index 1 since the first row exists
 
@@ -878,7 +917,7 @@
                                 </select>
                             </td>
                             <td class="p-2">
-                        <button type="button" class="remove-child bg-red-500 text-white px-2 py-1 rounded">Remove</button>
+                        <button type="button" class="remove-child bg-red-500 text-white py-1 rounded">Remove</button>
                     </td>
                 `;
 
@@ -892,6 +931,8 @@
             });
         });
 
+
+        //VOLUNTARTY WORK
         document.addEventListener("DOMContentLoaded", function() {
             let childIndex = 1; // Start with index 1 since the first row exists
 
@@ -910,9 +951,7 @@
                             </td>
                             <td class="p-2 border border-gray-300"><x-text-input class="w-full" type="number" name="volunteerwork_children[${childIndex}][vol_hours]" required /></td>
                             <td class="p-2 border border-gray-300"><x-text-input class="w-full" type="text" name="volunteerwork_children[${childIndex}][vol_position]" required /></td>
-                            <td class="p-2">
-                            <button type="button" class="remove-child bg-red-500 text-white px-2 py-1 rounded">Remove</button>
-                    </td>
+                            <td class="p-2"><button type="button" class="remove-child bg-red-500 text-white py-1 rounded">Remove</button></td>
                         </tr>
                 `;
 
@@ -926,6 +965,8 @@
             });
         });
 
+
+        // L&D
         document.addEventListener("DOMContentLoaded", function() {
             let childIndex = 1; // Start with index 1 since the first row exists
 
@@ -951,8 +992,9 @@
                                 </select>
                             </td>
                             <td class="p-2 border border-gray-300"><x-text-input class="w-full" type="text" name="trainingprogram_children[${childIndex}][ld_sponsor]" required /></td>
-                            <button type="button" class="remove-child bg-red-500 text-white px-2 py-1 rounded">Remove</button>
-                `;
+                            <td class="p-2"><button type="button" class="remove-child bg-red-500 text-white px-2 py-1 rounded">Remove</button></td>
+                        </tr>
+                            `;
 
                 table.appendChild(newRow);
                 childIndex++;
